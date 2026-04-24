@@ -1,0 +1,1277 @@
+<!doctype html>
+<html lang="id" class="h-full">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-learning Bagoes</title>
+  <link rel="icon" type="image/png" href="logo-ut-small-transparent.png">
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <script>
+tailwind.config = {
+  theme: {
+    extend: {
+      fontFamily: { jakarta: ['Plus Jakarta Sans', 'sans-serif'] }
+    }
+  }
+}
+  </script>
+  <style>
+html, body { height: 100%; margin: 0; }
+* { -webkit-tap-highlight-color: transparent; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+.anim-slide-up { animation: slideUp 0.4s ease-out forwards; }
+.anim-fade { animation: fadeIn 0.3s ease-out forwards; }
+.anim-scale { animation: scaleIn 0.3s ease-out forwards; }
+.stagger-1 { animation-delay: 0.05s; opacity: 0; }
+.stagger-2 { animation-delay: 0.1s; opacity: 0; }
+.stagger-3 { animation-delay: 0.15s; opacity: 0; }
+.stagger-4 { animation-delay: 0.2s; opacity: 0; }
+.menu-item:active { transform: scale(0.97); }
+.menu-item { transition: transform 0.15s ease; }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+ </head>
+ <body class="h-full font-jakarta">
+  <div id="app" class="h-full w-full overflow-auto hide-scrollbar" style="background:#0f172a;">
+   <!-- LOGIN SCREEN -->
+   <div id="screen-login" class="min-h-full w-full" style="display:none;">
+    <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%);" class="min-h-full w-full px-4 pb-8 flex flex-col">
+     <div class="flex-1 flex flex-col items-center justify-center">
+      <div class="w-full max-w-sm">
+       <div class="text-center mb-8 anim-scale">
+        <div class="flex items-center justify-center gap-2 mb-3">
+         <div class="w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden bg-white shadow-lg">
+          <img src="logo-ut-small-transparent.png" alt="Logo UT" class="w-12 h-12 object-contain" onerror="this.parentElement.innerHTML='<i data-lucide=\'graduation-cap\' style=\'width:28px;height:28px;color:#0f172a;\'></i>'; lucide.createIcons();">
+         </div>
+        </div>
+        <h1 class="text-2xl font-extrabold mb-1" style="color:#f1f5f9;">Selamat Datang</h1>
+        <p class="text-sm" style="color:#94a3b8;">Masuk dengan Email dan NIM Anda</p>
+       </div>
+       <div class="rounded-2xl p-6 anim-slide-up" style="background:#1e293b;border:1px solid #334155;">
+        <form id="form-login" onsubmit="submitLogin(event)" class="space-y-4">
+         <div>
+          <label class="text-xs font-bold block mb-2" style="color:#f1f5f9;">Email Mahasiswa</label> 
+          <input type="email" id="input-email" class="w-full rounded-xl px-3 py-2.5 text-xs" style="background:#0f172a;border:1px solid #334155;color:#f1f5f9;" placeholder="nim@ecampus.ut.ac.id" required>
+         </div>
+         <div class="relative">
+          <label class="text-xs font-bold block mb-2" style="color:#f1f5f9;">Nomor Induk Mahasiswa (NIM)</label> 
+          <div class="relative">
+           <input type="password" id="input-nim-pass" class="w-full rounded-xl px-3 py-2.5 text-xs pr-10" style="background:#0f172a;border:1px solid #334155;color:#f1f5f9;" placeholder="Password (NIM Anda)" required>
+           <button type="button" onclick="togglePassword('input-nim-pass', 'eye-student')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500">
+            <i data-lucide="eye" id="eye-student" style="width:16px;height:16px;"></i>
+           </button>
+          </div>
+         </div>
+         <div id="error-login" style="display:none;" class="rounded-lg p-2.5 text-xs font-medium bg-red-500/20 text-red-400 mb-4 border border-red-500/30"></div>
+         <button type="submit" id="btn-login" class="w-full py-2.5 rounded-xl text-sm font-bold" style="background:#f59e0b;color:#0f172a;">Lanjut ke Kelas</button> 
+         <div class="mt-6 pt-6 border-t border-slate-700/50 space-y-3 text-center">
+          <button type="button" onclick="showScreen('home')" class="w-full py-2 rounded-xl text-xs font-bold border border-slate-700 text-slate-400">Kembali ke Beranda</button>
+          <button type="button" onclick="showTutorLogin()" class="text-xs font-medium" style="color:#64748b;">Akses khusus Tutor</button>
+         </div>
+        </form>
+       </div>
+      </div>
+     </div>
+     <div class="text-center space-y-1 pb-4">
+      <p class="text-xs font-bold" style="color:#f1f5f9;">Universitas Terbuka</p>
+      <p class="text-xs" style="color:#94a3b8;">Salut Nusa Indah Belitang</p>
+     </div>
+    </div>
+   </div>
+
+<!-- TUTOR LOGIN SCREEN -->
+<div id="screen-tutor-login" class="min-h-full w-full" style="display:none;">
+ <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%);" class="min-h-full w-full px-4 flex flex-col items-center justify-center">
+  <div class="w-full max-w-sm">
+   <div class="text-center mb-8">
+    <div class="w-16 h-16 rounded-2xl bg-fuchsia-600/20 flex items-center justify-center mx-auto mb-3 border border-fuchsia-500/30">
+     <i data-lucide="shield-check" style="width:32px;height:32px;color:#d946ef;"></i>
+    </div>
+    <h1 class="text-2xl font-extrabold text-white">Login Tutor</h1>
+    <p class="text-sm text-slate-400">Masukkan kode akses tutor</p>
+   </div>
+   <div class="bg-slate-800/50 border border-slate-700 p-6 rounded-2xl backdrop-blur-sm">
+    <div class="space-y-4">
+     <div>
+      <label class="text-xs font-bold text-slate-300 block mb-2">Email Tutor</label>
+      <input type="email" id="tutor-email" class="w-full rounded-xl px-4 py-2.5 text-xs bg-slate-900 border border-slate-700 text-white" placeholder="Email Anda">
+     </div>
+     <div class="relative">
+      <label class="text-xs font-bold text-slate-300 block mb-2">Password</label>
+      <div class="relative">
+       <input type="password" id="tutor-password" class="w-full rounded-xl px-4 py-2.5 text-xs bg-slate-900 border border-slate-700 text-white pr-10" placeholder="••••••">
+       <button type="button" onclick="togglePassword('tutor-password', 'eye-tutor')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500">
+        <i data-lucide="eye" id="eye-tutor" style="width:16px;height:16px;"></i>
+       </button>
+      </div>
+     </div>
+     <div id="error-tutor" style="display:none;" class="text-xs text-red-400 py-2"></div>
+     <button onclick="submitTutorLogin()" class="w-full py-2.5 rounded-xl text-sm font-bold bg-fuchsia-600 text-white">Masuk Dashboard</button>
+     <button onclick="showScreen('login')" class="w-full py-2 text-xs text-slate-500">Kembali ke Login</button>
+    </div>
+   </div>
+  </div>
+ </div>
+</div>
+
+<!-- TUTOR DASHBOARD SCREEN -->
+<div id="screen-tutor-dash" class="min-h-full w-full" style="display:none;">
+ <div class="min-h-full w-full flex flex-col" style="background:#0f172a;">
+  <!-- Header -->
+  <div class="px-4 py-6 bg-slate-800/30 border-b border-slate-700">
+   <div class="flex items-center justify-between">
+    <div>
+     <h1 class="text-lg font-bold text-white">Dashboard Tutor</h1>
+     <p class="text-xs text-slate-400">Pantau Jawaban Mahasiswa</p>
+    </div>
+    <button onclick="logout()" class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center border border-slate-700">
+     <i data-lucide="log-out" style="width:18px;height:18px;color:#ef4444;"></i>
+    </button>
+   </div>
+  </div>
+  <!-- Filter -->
+  <div class="px-4 py-4 flex gap-2 overflow-x-auto hide-scrollbar">
+   <button onclick="filterTutorData('all')" class="flex-shrink-0 px-4 py-2 rounded-lg text-xs font-bold bg-fuchsia-600 text-white">Semua</button>
+   <button onclick="filterTutorData('8B')" class="flex-shrink-0 px-4 py-2 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">8B</button>
+   <button onclick="filterTutorData('8C')" class="flex-shrink-0 px-4 py-2 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">8C</button>
+   <button onclick="filterTutorData('6A')" class="flex-shrink-0 px-4 py-2 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">6A</button>
+   <button onclick="filterTutorData('5A')" class="flex-shrink-0 px-4 py-2 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">5A</button>
+  </div>
+  <!-- List Submissions -->
+  <div class="flex-1 px-4 pb-8 space-y-4 overflow-y-auto" id="tutor-submissions-list">
+   <!-- Items will be injected here -->
+  </div>
+ </div>
+</div>
+
+<!-- MODAL FEEDBACK -->
+<div id="modal-feedback" class="fixed inset-0 z-50 flex items-center justify-center px-4" style="display:none;">
+ <div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+ <div class="relative w-full max-w-sm bg-slate-800 rounded-2xl border border-slate-700 p-6 shadow-2xl">
+  <h3 class="text-lg font-bold text-white mb-1">Beri Feedback</h3>
+  <p id="feedback-student-info" class="text-xs text-slate-400 mb-4"></p>
+  <div class="space-y-4">
+    <div>
+     <label class="text-[10px] font-bold text-slate-500 uppercase block mb-1.5">Komentar / Masukan</label>
+     <textarea id="feedback-text" rows="4" class="w-full rounded-xl bg-slate-900 border border-slate-700 text-white p-3 text-xs" placeholder="Tulis masukan Anda..."></textarea>
+    </div>
+    <div>
+     <label class="text-[10px] font-bold text-slate-500 uppercase block mb-2">Penilaian Bintang</label>
+     <div class="flex items-center gap-2 mb-1" id="star-rating-container">
+       <button onclick="setStarRating(1)" class="star-btn p-1 transition-all"><i data-lucide="star" style="width:24px;height:24px;color:#475569;"></i></button>
+       <button onclick="setStarRating(2)" class="star-btn p-1 transition-all"><i data-lucide="star" style="width:24px;height:24px;color:#475569;"></i></button>
+       <button onclick="setStarRating(3)" class="star-btn p-1 transition-all"><i data-lucide="star" style="width:24px;height:24px;color:#475569;"></i></button>
+       <button onclick="setStarRating(4)" class="star-btn p-1 transition-all"><i data-lucide="star" style="width:24px;height:24px;color:#475569;"></i></button>
+       <button onclick="setStarRating(5)" class="star-btn p-1 transition-all"><i data-lucide="star" style="width:24px;height:24px;color:#475569;"></i></button>
+     </div>
+     <p id="star-label" class="text-[10px] font-bold text-fuchsia-400">-</p>
+     <input type="hidden" id="feedback-grade">
+    </div>
+    <div class="flex gap-2 pt-2">
+     <button onclick="closeFeedbackModal()" class="flex-1 py-2.5 rounded-xl text-xs font-bold bg-slate-700 text-white">Batal</button>
+     <button onclick="saveFeedback()" class="flex-1 py-2.5 rounded-xl text-xs font-bold bg-fuchsia-600 text-white shadow-lg shadow-fuchsia-600/20">Simpan Penilaian</button>
+    </div>
+   </div>
+ </div>
+</div>
+<!-- HOME SCREEN -->
+   <div id="screen-home" class="min-h-full w-full" style="display:block;">
+    <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%);" class="min-h-full w-full px-4 pb-8">
+     <div style="min-height:100%;display:flex;flex-direction:column;">
+      <!-- Header -->
+      <div class="pt-6 pb-4 anim-fade">
+       <div class="flex items-center justify-between">
+        <div>
+         <div class="flex items-center gap-2 mb-1">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden bg-white shadow-md">
+           <img src="logo-ut-small-transparent.png" alt="Logo UT" class="w-7 h-7 object-contain" onerror="this.parentElement.innerHTML='<i data-lucide=\'graduation-cap\' style=\'width:20px;height:20px;color:#0f172a;\'></i>'; lucide.createIcons();">
+          </div><span id="el-app-title" class="text-lg font-bold" style="color:#f59e0b;">E-learning Bagoes</span>
+         </div>
+         <p id="el-welcome" class="text-sm font-medium" style="color:#94a3b8;">Selamat Datang, Mahasiswa!</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="showTutorLogin()" class="w-10 h-10 rounded-xl flex items-center justify-center bg-fuchsia-600/20 border border-fuchsia-500/30">
+           <i data-lucide="shield-check" style="width:18px;height:18px;color:#d946ef;"></i>
+          </button>
+          <div class="w-10 h-10 rounded-full flex items-center justify-center" style="background:#1e293b;border:1px solid #334155;">
+           <i data-lucide="user" style="width:18px;height:18px;color:#94a3b8;"></i>
+          </div>
+        </div>
+       </div>
+      </div><!-- Stats -->
+      <div class="grid grid-cols-2 gap-3 mb-6 anim-slide-up stagger-1">
+       <div class="rounded-2xl p-4" style="background:#1e293b;border:1px solid #334155;">
+        <div class="flex items-center gap-2 mb-2">
+         <i data-lucide="book-open" style="width:16px;height:16px;color:#f59e0b;"></i> <span class="text-xs font-medium" style="color:#94a3b8;">Mata Kuliah</span>
+        </div>
+        <p class="text-2xl font-extrabold" style="color:#f1f5f9;">4</p>
+       </div>
+       <div class="rounded-2xl p-4" style="background:#1e293b;border:1px solid #334155;">
+        <div class="flex items-center gap-2 mb-2">
+         <i data-lucide="layers" style="width:16px;height:16px;color:#38bdf8;"></i> <span class="text-xs font-medium" style="color:#94a3b8;">Total Sesi</span>
+        </div>
+        <p class="text-2xl font-extrabold" style="color:#f1f5f9;">32</p>
+       </div>
+      </div><!-- Section Title -->
+      <div class="flex items-center gap-2 mb-4 anim-slide-up stagger-2">
+       <div class="w-1 h-5 rounded-full" style="background:#f59e0b;"></div>
+       <h2 class="text-base font-bold" style="color:#f1f5f9;">Kelas Aktif</h2>
+      </div><!-- Course Cards -->
+      <div id="course-list" class="space-y-3 anim-slide-up stagger-3"></div>
+      <div style="flex:1;"></div>
+      <div class="mt-8 pt-6 border-t" style="border-color:#334155;">
+       <div class="text-center space-y-2 pb-4">
+        <p class="text-xs font-bold" style="color:#f1f5f9;">Universitas Terbuka</p>
+        <p class="text-xs" style="color:#94a3b8;">Salut Nusa Indah Belitang</p>
+        <p class="text-xs" style="color:#64748b;">© 2026 Bagoes Panca Wiratama. All rights reserved.</p>
+       </div>
+      </div>
+     </div>
+    </div>
+   </div><!-- SESSION LIST SCREEN -->
+   <div id="screen-sessions" class="min-h-full w-full" style="display:none;">
+    <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%);" class="min-h-full w-full px-4 pb-8">
+     <div class="pt-6 pb-2">
+      <button onclick="goHome()" class="flex items-center gap-2 mb-4 menu-item">
+       <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#1e293b;border:1px solid #334155;">
+        <i data-lucide="arrow-left" style="width:16px;height:16px;color:#f1f5f9;"></i>
+       </div><span class="text-sm font-medium" style="color:#94a3b8;">Kembali</span> </button>
+      <div id="session-header" class="mb-5"></div>
+     </div>
+     <div id="session-list" class="space-y-2.5"></div>
+    </div>
+   </div><!-- MENU SCREEN -->
+   <div id="screen-menu" class="min-h-full w-full" style="display:none;">
+    <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%);" class="min-h-full w-full px-4 pb-8">
+     <div class="pt-6 pb-2">
+      <button onclick="goSessions()" class="flex items-center gap-2 mb-4 menu-item">
+       <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#1e293b;border:1px solid #334155;">
+        <i data-lucide="arrow-left" style="width:16px;height:16px;color:#f1f5f9;"></i>
+       </div><span class="text-sm font-medium" style="color:#94a3b8;">Kembali</span> </button>
+      <div id="menu-header" class="mb-5"></div>
+     </div>
+     <div id="menu-list" class="space-y-2.5"></div>
+     <div class="mt-8 pt-6 border-t" style="border-color:#334155;">
+      <div class="text-center space-y-2">
+       <p class="text-xs font-bold" style="color:#f1f5f9;">Universitas Terbuka</p>
+       <p class="text-xs" style="color:#94a3b8;">Salut Nusa Indah Belitang</p>
+       <p class="text-xs" style="color:#64748b;">© 2026 Bagoes Panca Wiratama. All rights reserved.</p>
+      </div>
+     </div>
+    </div>
+   </div><!-- CONTENT SCREEN -->
+   <div id="screen-content" class="min-h-full w-full" style="display:none;">
+    <div style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#0f172a 100%);" class="min-h-full w-full px-4 pb-8">
+     <div class="pt-6 pb-2">
+      <button onclick="goMenu()" class="flex items-center gap-2 mb-4 menu-item">
+       <div class="w-8 h-8 rounded-lg flex items-center justify-center" style="background:#1e293b;border:1px solid #334155;">
+        <i data-lucide="arrow-left" style="width:16px;height:16px;color:#f1f5f9;"></i>
+       </div><span class="text-sm font-medium" style="color:#94a3b8;">Kembali</span> </button>
+      <div id="content-header" class="mb-5"></div>
+      <div id="content-area" class="anim-scale"></div>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+// DATA - STRUKTUR KELAS
+const courses = [
+  { id: 'c1', kelas: '8B', kode: 'SPGK4307', nama: 'Bimbingan Konseling di SD', color: '#f59e0b', icon: 'heart-handshake' },
+  { id: 'c2', kelas: '8C', kode: 'SPGK4307', nama: 'Bimbingan Konseling di SD', color: '#38bdf8', icon: 'heart-handshake' },
+  { id: 'c3', kelas: '6A', kode: 'SPDA4401', nama: 'Penanganan Anak Berkebutuhan Khusus', color: '#a78bfa', icon: 'accessibility' },
+  { id: 'c4', kelas: '5A', kode: 'SPGK4410', nama: 'Strategi Pembelajaran Kontemporer di SD', color: '#34d399', icon: 'lightbulb' }
+];
+
+// DATA MAHASISWA (DATABASE LOKAL UNTUK VALIDASI)
+const studentDatabase = [
+  { email: '860692226@ecampus.ut.ac.id', nim: '860692226', nama: 'AHMAD FEBRY RAFSANJANI', kelas: '5A' },
+  { email: '877606024@ecampus.ut.ac.id', nim: '877606024', nama: 'ENDAH GUSTRIHAYATI', kelas: '5A' },
+  { email: '877762336@ecampus.ut.ac.id', nim: '877762336', nama: 'IMROATUL MIFTAH ADITIN', kelas: '5A' },
+  { email: '877763528@ecampus.ut.ac.id', nim: '877763528', nama: 'ALEFANNO MIRZARA LUIRDENSA', kelas: '5A' },
+  { email: '877763639@ecampus.ut.ac.id', nim: '877763639', nama: 'ARDILA BUNGA WIJAYA', kelas: '5A' },
+  { email: '877764845@ecampus.ut.ac.id', nim: '877764845', nama: 'AJENG NURUL QHOMARIAH', kelas: '5A' },
+  { email: '877765016@ecampus.ut.ac.id', nim: '877765016', nama: 'ISNAENI KHASANAH', kelas: '5A' },
+  { email: '877765023@ecampus.ut.ac.id', nim: '877765023', nama: 'EKA SUSANTI', kelas: '5A' },
+  { email: '877765245@ecampus.ut.ac.id', nim: '877765245', nama: 'AGE VINA PANDU WINATA', kelas: '5A' },
+  { email: '877765324@ecampus.ut.ac.id', nim: '877765324', nama: 'SERLY LISTIANI', kelas: '5A' },
+  { email: '877766831@ecampus.ut.ac.id', nim: '877766831', nama: 'BERLIANA ERISA PUTRI', kelas: '5A' },
+  { email: '877766903@ecampus.ut.ac.id', nim: '877766903', nama: 'USWAH NUR AZIZAH', kelas: '5A' },
+  { email: '877768978@ecampus.ut.ac.id', nim: '877768978', nama: 'HENDRA KURNIAWAN', kelas: '5A' },
+  { email: '877769615@ecampus.ut.ac.id', nim: '877769615', nama: 'META NOVI ASARI', kelas: '5A' },
+  { email: '878210888@ecampus.ut.ac.id', nim: '878210888', nama: 'TRIA SEPTIA NINGSIH', kelas: '5A' },
+  { email: '878211106@ecampus.ut.ac.id', nim: '878211106', nama: 'SRI SUPATMI', kelas: '5A' },
+  { email: '878211414@ecampus.ut.ac.id', nim: '878211414', nama: 'TIKA ANJELIKA', kelas: '5A' },
+  { email: '878212011@ecampus.ut.ac.id', nim: '878212011', nama: 'PUTRI RAMA DANI', kelas: '5A' },
+  { email: '878212272@ecampus.ut.ac.id', nim: '878212272', nama: 'CITRA ANISA', kelas: '5A' },
+  { email: '878212606@ecampus.ut.ac.id', nim: '878212606', nama: 'B HESTI CHARITA', kelas: '5A' },
+  // KELAS 6A
+  { email: '859781448@ecampus.ut.ac.id', nim: '859781448', nama: 'CHINTYA YESI MEILIN', kelas: '6A' },
+  { email: '859781795@ecampus.ut.ac.id', nim: '859781795', nama: 'APRIANA', kelas: '6A' },
+  { email: '859785936@ecampus.ut.ac.id', nim: '859785936', nama: 'CYINTA ARUM RIZQI', kelas: '6A' },
+  { email: '859786454@ecampus.ut.ac.id', nim: '859786454', nama: 'DINDA REFIKA SARI', kelas: '6A' },
+  { email: '859786938@ecampus.ut.ac.id', nim: '859786938', nama: 'DIANA VRANDESTIA', kelas: '6A' },
+  { email: '859787463@ecampus.ut.ac.id', nim: '859787463', nama: 'BERTA AMALIA', kelas: '6A' },
+  { email: '859787495@ecampus.ut.ac.id', nim: '859787495', nama: 'ANIK JIHANNISA', kelas: '6A' },
+  { email: '859789632@ecampus.ut.ac.id', nim: '859789632', nama: 'ARISTA GUSTIANINGSIH', kelas: '6A' },
+  { email: '859792308@ecampus.ut.ac.id', nim: '859792308', nama: 'DANDI ROBIANSAH', kelas: '6A' },
+  { email: '859792354@ecampus.ut.ac.id', nim: '859792354', nama: 'ANISA RISMAYANI', kelas: '6A' },
+  { email: '859792741@ecampus.ut.ac.id', nim: '859792741', nama: 'ADE PERMATASARI', kelas: '6A' },
+  { email: '859793578@ecampus.ut.ac.id', nim: '859793578', nama: 'DIAN INDRIANI', kelas: '6A' },
+  { email: '859794168@ecampus.ut.ac.id', nim: '859794168', nama: 'DIA ANGGELA', kelas: '6A' },
+  { email: '859794319@ecampus.ut.ac.id', nim: '859794319', nama: 'AFIFAL AQRAM', kelas: '6A' },
+  { email: '859794831@ecampus.ut.ac.id', nim: '859794831', nama: 'CITRA AYU LESTARI', kelas: '6A' },
+  { email: '859795224@ecampus.ut.ac.id', nim: '859795224', nama: 'DIAJENG EGISTA', kelas: '6A' },
+  { email: '859796004@ecampus.ut.ac.id', nim: '859796004', nama: 'AJI RESTU PRAYOGI', kelas: '6A' },
+  { email: '859796068@ecampus.ut.ac.id', nim: '859796068', nama: 'ADI SETIO PAMUNGKAS', kelas: '6A' },
+  { email: '859796154@ecampus.ut.ac.id', nim: '859796154', nama: 'DEA MARTALENA', kelas: '6A' },
+  { email: '859797679@ecampus.ut.ac.id', nim: '859797679', nama: 'DESTY ANGGRAITA', kelas: '6A' },
+  { email: '859797726@ecampus.ut.ac.id', nim: '859797726', nama: 'DESWIKA ROSAPUTRI', kelas: '6A' },
+  { email: '859801288@ecampus.ut.ac.id', nim: '859801288', nama: 'CITRA', kelas: '6A' },
+  { email: '859802068@ecampus.ut.ac.id', nim: '859802068', nama: 'DEA PUSPITA', kelas: '6A' },
+  { email: '859808535@ecampus.ut.ac.id', nim: '859808535', nama: 'ALVINA DAMAYANTI', kelas: '6A' },
+  { email: '859812954@ecampus.ut.ac.id', nim: '859812954', nama: 'CINTIA PUTRI', kelas: '6A' },
+  { email: '860343187@ecampus.ut.ac.id', nim: '860343187', nama: 'VINA SELVIA MEISOPA', kelas: '6A' },
+  { email: '860350752@ecampus.ut.ac.id', nim: '860350752', nama: 'INDAH DWI AMIDATUL YU\'LLA', kelas: '6A' },
+  { email: '877595752@ecampus.ut.ac.id', nim: '877595752', nama: 'APRILIAN TIKA', kelas: '6A' },
+  { email: '877595967@ecampus.ut.ac.id', nim: '877595967', nama: 'DINDA APRISTA PERTIWI', kelas: '6A' },
+  { email: '877602027@ecampus.ut.ac.id', nim: '877602027', nama: 'DEVI MAYASARI', kelas: '6A' },
+  { email: '877603946@ecampus.ut.ac.id', nim: '877603946', nama: 'BELLA NOVITA', kelas: '6A' },
+  // KELAS 8B
+  { email: '855734527@ecampus.ut.ac.id', nim: '855734527', nama: 'DELA SINTAWATI', kelas: '8B' },
+  { email: '855734534@ecampus.ut.ac.id', nim: '855734534', nama: 'ERIN ARDANATA', kelas: '8B' },
+  { email: '855883983@ecampus.ut.ac.id', nim: '855883983', nama: 'DISKA FINDANI', kelas: '8B' },
+  { email: '856603085@ecampus.ut.ac.id', nim: '856603085', nama: 'DERIANA', kelas: '8B' },
+  { email: '856603157@ecampus.ut.ac.id', nim: '856603157', nama: 'DERIANI', kelas: '8B' },
+  { email: '856607756@ecampus.ut.ac.id', nim: '856607756', nama: 'ELVA YULIANA', kelas: '8B' },
+  { email: '856610217@ecampus.ut.ac.id', nim: '856610217', nama: 'ENDANG ANDARA PUTRI MULIA', kelas: '8B' },
+  { email: '856789136@ecampus.ut.ac.id', nim: '856789136', nama: 'DENI IRAWAN', kelas: '8B' },
+  { email: '856789143@ecampus.ut.ac.id', nim: '856789143', nama: 'DENI SAPUTRA', kelas: '8B' },
+  { email: '856789222@ecampus.ut.ac.id', nim: '856789222', nama: 'DWITASARI', kelas: '8B' },
+  { email: '856789261@ecampus.ut.ac.id', nim: '856789261', nama: 'DEVI YULIA PRATIWI', kelas: '8B' },
+  { email: '856789849@ecampus.ut.ac.id', nim: '856789849', nama: 'DINA ANISA', kelas: '8B' },
+  { email: '856789999@ecampus.ut.ac.id', nim: '856789999', nama: 'DIAH PUTRI AFIFAH', kelas: '8B' },
+  { email: '856790187@ecampus.ut.ac.id', nim: '856790187', nama: 'DEWI ERMAWATI', kelas: '8B' },
+  { email: '856790241@ecampus.ut.ac.id', nim: '856790241', nama: 'DITA ANGGRAENI', kelas: '8B' },
+  { email: '856790488@ecampus.ut.ac.id', nim: '856790488', nama: 'DHEA ARTIKA NOVENTIANA', kelas: '8B' },
+  { email: '856790764@ecampus.ut.ac.id', nim: '856790764', nama: 'ELENA FAJAR DWIANA', kelas: '8B' },
+  { email: '856792585@ecampus.ut.ac.id', nim: '856792585', nama: 'EKA MAYA PUSPITA', kelas: '8B' },
+  { email: '856793397@ecampus.ut.ac.id', nim: '856793397', nama: 'DEVA SYAHRONI', kelas: '8B' },
+  { email: '856796679@ecampus.ut.ac.id', nim: '856796679', nama: 'DESI NATALIA', kelas: '8B' },
+  { email: '856796837@ecampus.ut.ac.id', nim: '856796837', nama: 'DESNA FITRIANA', kelas: '8B' },
+  { email: '856797971@ecampus.ut.ac.id', nim: '856797971', nama: 'DWI MARIA', kelas: '8B' },
+  { email: '860080386@ecampus.ut.ac.id', nim: '860080386', nama: 'CICA ATIKA', kelas: '8B' },
+  { email: '878235739@ecampus.ut.ac.id', nim: '878235739', nama: 'ANGGI OCTAVIANA', kelas: '8B' },
+  // KELAS 8C
+  { email: '855734487@ecampus.ut.ac.id', nim: '855734487', nama: 'IKE DIA PRENTIKA', kelas: '8C' },
+  { email: '855883951@ecampus.ut.ac.id', nim: '855883951', nama: 'INTAN TRI KUSUMAWATI', kelas: '8C' },
+  { email: '856602599@ecampus.ut.ac.id', nim: '856602599', nama: 'KHOIRUN NISA', kelas: '8C' },
+  { email: '856607265@ecampus.ut.ac.id', nim: '856607265', nama: 'INDRA RAHMAN', kelas: '8C' },
+  { email: '856608339@ecampus.ut.ac.id', nim: '856608339', nama: 'KURNIA RAHMAWATI', kelas: '8C' },
+  { email: '856609197@ecampus.ut.ac.id', nim: '856609197', nama: 'INDAH SETIANINGSIH', kelas: '8C' },
+  { email: '856789129@ecampus.ut.ac.id', nim: '856789129', nama: 'FENTI NUR SAFITRI', kelas: '8C' },
+  { email: '856789182@ecampus.ut.ac.id', nim: '856789182', nama: 'FAHRIN RISANDINI', kelas: '8C' },
+  { email: '856789208@ecampus.ut.ac.id', nim: '856789208', nama: 'FINKY ARIYANTI', kelas: '8C' },
+  { email: '856789981@ecampus.ut.ac.id', nim: '856789981', nama: 'KHANIF FARIS FADHILA', kelas: '8C' },
+  { email: '856790259@ecampus.ut.ac.id', nim: '856790259', nama: 'FINA ANGGRAINI', kelas: '8C' },
+  { email: '856790306@ecampus.ut.ac.id', nim: '856790306', nama: 'IKE FAJAR AISAH', kelas: '8C' },
+  { email: '856790345@ecampus.ut.ac.id', nim: '856790345', nama: 'EVIRA LUKIANA', kelas: '8C' },
+  { email: '856790424@ecampus.ut.ac.id', nim: '856790424', nama: 'INDAH MUSTIKA SARI', kelas: '8C' },
+  { email: '856790757@ecampus.ut.ac.id', nim: '856790757', nama: 'FITRY INDAH SARI', kelas: '8C' },
+  { email: '856790843@ecampus.ut.ac.id', nim: '856790843', nama: 'JENNY VIOLLA', kelas: '8C' },
+  { email: '856790882@ecampus.ut.ac.id', nim: '856790882', nama: 'FERI KIRANA HANDAYANI', kelas: '8C' },
+  { email: '856790961@ecampus.ut.ac.id', nim: '856790961', nama: 'FRANCISKUS TANUERIT', kelas: '8C' },
+  { email: '856791806@ecampus.ut.ac.id', nim: '856791806', nama: 'DIMAS PRATAMA', kelas: '8C' },
+  { email: '856793301@ecampus.ut.ac.id', nim: '856793301', nama: 'INNES KUSUMAWATI', kelas: '8C' },
+  { email: '856795161@ecampus.ut.ac.id', nim: '856795161', nama: 'IRMA SURYANI', kelas: '8C' },
+  { email: '856795219@ecampus.ut.ac.id', nim: '856795219', nama: 'HAIDILA RAHMAH', kelas: '8C' },
+  { email: '856796432@ecampus.ut.ac.id', nim: '856796432', nama: 'ICA JUNITA', kelas: '8C' },
+  { email: '856796765@ecampus.ut.ac.id', nim: '856796765', nama: 'INTAN WIDIAWATI', kelas: '8C' },
+  { email: '856797591@ecampus.ut.ac.id', nim: '856797591', nama: 'ICHO FERDINAN', kelas: '8C' },
+  { email: '856799556@ecampus.ut.ac.id', nim: '856799556', nama: 'EVA RIYANTI', kelas: '8C' },
+  { email: '860098532@ecampus.ut.ac.id', nim: '860098532', nama: 'SARI ROHANA INDAH', kelas: '8C' },
+  { email: '860101687@ecampus.ut.ac.id', nim: '860101687', nama: 'YULIANTI RISTIANA', kelas: '8C' }
+];
+
+const menuTemplate = [
+  { id: 'm1', nama: 'RAT/SAT', icon: 'file-text', desc: 'Rancangan Aktivitas Tutorial' },
+  { id: 'm2', nama: 'Pertanyaan Pemantik', icon: 'help-circle', desc: 'Pertanyaan pembuka diskusi' },
+  { id: 'm3', nama: 'Materi Pembelajaran', icon: 'book-open', desc: 'Modul dan bahan ajar' },
+  { id: 'm4', nama: 'Video Pembelajaran!', icon: 'play-circle', desc: 'Materi video tutorial' },
+  { id: 'm5', nama: 'Pembagian Kelompok', icon: 'users', desc: 'Informasi kelompok belajar' },
+  { id: 'm6', nama: 'LKM', icon: 'clipboard-list', desc: 'Lembar Kerja Mahasiswa' },
+  { id: 'm7', nama: 'Quiz', icon: 'trophy', desc: 'Uji pemahaman materi' },
+  { id: 'm8', nama: 'Refleksi', icon: 'message-circle', desc: 'Refleksi pembelajaran' },
+  { id: 'm9', nama: 'Rangkuman', icon: 'list', desc: 'Ringkasan materi sesi' }
+];
+
+// DATA KONTEN SPESIFIK PER KELAS + SESI
+const sessionContent = {
+  // KELAS 8B - SPGK4307 (c1)
+  'c1_1': { m1: { title: 'RAT/SAT Sesi 1 - Kelas 8B', content: 'Rancangan aktivitas untuk sesi pertama kelas 8B. Fokus pada pemahaman dasar konsep BK di SD.' }, m2: ['Apa pengalaman Anda dalam bimbingan konseling?', 'Bagaimana pentingnya BK di sekolah dasar?', 'Apa tantangan utama dalam melaksanakan BK?'], m3: 'Modul 1: Dasar-dasar Bimbingan Konseling di SD - Edisi 2026', m4: 'https://example.com/video-bk-sesi1', m5: [{ no: 1, anggota: ['Mahasiswa A', 'Mahasiswa B', 'Mahasiswa C'] }, { no: 2, anggota: ['Mahasiswa D', 'Mahasiswa E', 'Mahasiswa F'] }], m6: 'Lembar Kerja 1: Analisis kasus konseling di SD', m7: { soal: 10, waktu: 30, tipe: 'pilihan ganda' }, m8: 'Refleksikan apa yang sudah dipelajari hari ini tentang dasar BK', m9: ['Konsep BK adalah proses bantuan sistematis', 'BK di SD fokus pada perkembangan pribadi siswa'] },
+  'c1_2': { m1: { title: 'RAT/SAT Sesi 2 - Kelas 8B', content: 'Sesi kedua kelas 8B membahas teknik konseling individual dasar dan penerapannya.' }, m2: ['Teknik konseling apa yang paling efektif untuk SD?', 'Bagaimana mengatasi resistensi klien?', 'Etika apa yang harus diperhatikan konselor?'], m3: 'Modul 2: Teknik Konseling Individual di Sekolah Dasar', m4: 'https://example.com/video-bk-sesi2', m5: [{ no: 1, anggota: ['Mahasiswa G', 'Mahasiswa H', 'Mahasiswa I'] }, { no: 2, anggota: ['Mahasiswa J', 'Mahasiswa K'] }], m6: 'Lembar Kerja 2: Role play konseling individual', m7: { soal: 10, waktu: 30, tipe: 'esai singkat' }, m8: 'Bagaimana pengalaman role play Anda? Apa yang sulit?', m9: ['Teknik active listening sangat penting', 'Emosi konselor harus terkontrol dengan baik'] },
+  'c1_3': { m1: { title: 'RAT/SAT Sesi 3 - Kelas 8B', content: '<strong>Capaian Pembelajaran :</strong><br>a. Mahasiswa mampu menguraikan karakteristik peserta didik dan mampu menganalisis serta mengevaluasi tugas perkembangan peserta didik Sekolah Dasar (SD).<br><br>b. Mahasiswa mampu menguraikan konsep teknik assesmen dan mampu memanfaatkan data hasil assesmen kebutuhan peserta didik di sekolah Dasar (SD).<br><br><strong>Pokok Bahasan dan Sub Pokok Bahasan</strong><br>• Karakteristik dan Tugas Perkembangan Peserta Didik di SD.<br>➢ Dasar Perkembangan Kognitif dan Bahasa Serta Upaya Bimbingannya<br>➢ Perkembangan Sosial, Emosi, dan Moral Serta Upaya Bimbingannya<br><br>• Teknik Assesmen dan Data Hasil Assesmen Kebutuhan Peserta Didik di SD.<br>➢ Pengertian Asesmen' }, m2: ['Apa perbedaan yang kamu lihat pada setiap siswa di kelas?', 'Bagaimana cara mengetahui perkembangan siswa sudah sesuai atau belum?', 'Untuk apa guru melakukan penilaian (asesmen) pada siswa?'], m3: { text: 'Modul 3: Karakteristik Perkembangan dan Asesmen Peserta Didik SD', image: 'materi sesi 3 kelas 8bc.png' }, m4: 'https://www.youtube.com/embed/YwG9Mvnfoc0', m5: [{ no: 1, anggota: ['Mahasiswa L', 'Mahasiswa M', 'Mahasiswa N', 'Mahasiswa O'] }, { no: 2, anggota: ['Mahasiswa P', 'Mahasiswa Q'] }], m6: 'Lembar Kerja 3: Analisis tugas perkembangan dan data asesmen', m7: { soal: 12, waktu: 35, tipe: 'analisis' }, m8: 'Analisis kasus: Interpretasi data asesmen untuk perencanaan BK', m9: ['Memahami tugas perkembangan adalah dasar BK efektif', 'Data asesmen menginformasikan strategi intervensi yang tepat'] },
+  'c1_4': { m1: { title: 'RAT/SAT Sesi 4 - Kelas 8B', content: 'Sesi keempat membahas asesmen kebutuhan siswa dan identifikasi masalah.' }, m2: ['Bagaimana cara melakukan asesmen yang tepat?', 'Alat apa yang bisa digunakan untuk asesmen?', 'Bagaimana interpretasi hasil asesmen?'], m3: 'Modul 4: Asesmen Kebutuhan dan Identifikasi Masalah', m4: 'https://example.com/video-bk-sesi4', m5: [{ no: 1, anggota: ['Mahasiswa R', 'Mahasiswa S', 'Mahasiswa T'] }, { no: 2, anggota: ['Mahasiswa U', 'Mahasiswa V', 'Mahasiswa W'] }], m6: 'Lembar Kerja 4: Praktik asesmen siswa', m7: { soal: 15, waktu: 40, tipe: 'kasus' }, m8: 'Analisis kasus siswa dan identifikasi kebutuhannya', m9: ['Asesmen harus holistik dan objektif', 'Data asesmen dasar perencanaan intervensi'] },
+  'c1_5': { m1: { title: 'RAT/SAT Sesi 5 - Kelas 8B', content: 'Sesi kelima mengupas perencanaan program BK yang terstruktur dan efektif.' }, m2: ['Komponen apa saja dalam perencanaan program BK?', 'Bagaimana menyesuaikan program dengan kebutuhan sekolah?', 'Siapa yang harus terlibat dalam perencanaan?'], m3: 'Modul 5: Perencanaan Program Bimbingan Konseling Komprehensif', m4: 'https://example.com/video-bk-sesi5', m5: [{ no: 1, anggota: ['Mahasiswa X', 'Mahasiswa Y', 'Mahasiswa Z'] }, { no: 2, anggota: ['Mahasiswa AA', 'Mahasiswa AB'] }], m6: 'Lembar Kerja 5: Merancang program BK untuk sekolah', m7: { soal: 12, waktu: 45, tipe: 'proyek' }, m8: 'Bagaimana Anda merancang program BK yang relevan?', m9: ['Program harus berbasis data', 'Kolaborasi stakeholder sangat penting'] },
+  'c1_6': { m1: { title: 'RAT/SAT Sesi 6 - Kelas 8B', content: 'Sesi keenam membahas implementasi program BK dan strategi intervensi.' }, m2: ['Bagaimana strategi pelaksanaan program BK?', 'Apa kendala yang mungkin dihadapi?', 'Bagaimana mengatasi hambatan implementasi?'], m3: 'Modul 6: Implementasi Program BK dan Strategi Intervensi', m4: 'https://example.com/video-bk-sesi6', m5: [{ no: 1, anggota: ['Mahasiswa AC', 'Mahasiswa AD', 'Mahasiswa AE', 'Mahasiswa AF'] }, { no: 2, anggota: ['Mahasiswa AG', 'Mahasiswa AH'] }], m6: 'Lembar Kerja 6: Simulasi implementasi program', m7: { soal: 10, waktu: 30, tipe: 'praktik' }, m8: 'Apa strategi Anda menghadapi hambatan implementasi?', m9: ['Fleksibilitas penting dalam implementasi', 'Monitoring berkelanjutan sangat diperlukan'] },
+  'c1_7': { m1: { title: 'RAT/SAT Sesi 7 - Kelas 8B', content: 'Sesi ketujuh fokus pada evaluasi dan monitoring program BK.' }, m2: ['Apa indikator keberhasilan program BK?', 'Bagaimana cara melakukan evaluasi?', 'Kapan dan berapa sering evaluasi dilakukan?'], m3: 'Modul 7: Evaluasi dan Monitoring Program Bimbingan Konseling', m4: 'https://example.com/video-bk-sesi7', m5: [{ no: 1, anggota: ['Mahasiswa AI', 'Mahasiswa AJ', 'Mahasiswa AK'] }, { no: 2, anggota: ['Mahasiswa AL', 'Mahasiswa AM', 'Mahasiswa AN'] }], m6: 'Lembar Kerja 7: Merancang instrumen evaluasi', m7: { soal: 13, waktu: 40, tipe: 'mix' }, m8: 'Rancang sistem evaluasi untuk program Anda', m9: ['Evaluasi berbasis data dan terukur', 'Hasil evaluasi untuk perbaikan program'] },
+  'c1_8': { m1: { title: 'RAT/SAT Sesi 8 - Kelas 8B', content: 'Sesi terakhir adalah integrasi, refleksi mendalam, and penutupan mata kuliah.' }, m2: ['Apa pembelajaran terpenting dari mata kuliah ini?', 'Bagaimana menerapkan di sekolah tempat Anda?', 'Apa tantangan profesional yang akan Anda hadapi?'], m3: 'Modul 8: Sintesis dan Pengembangan Profesional Konselor', m4: 'https://example.com/video-bk-sesi8', m5: [{ no: 1, anggota: ['Semua peserta kelas 8B'] }], m6: 'Lembar Kerja 8: Proyek akhir dan portofolio', m7: { soal: 20, waktu: 60, tipe: 'komprehensif' }, m8: 'Refleksi holistik tentang menjadi konselor profesional', m9: ['Kompetensi konselor terus berkembang', 'Komitmen etis adalah fondasi praktik BK'] },
+
+  // KELAS 8C - SPGK4307 (c2)
+  'c2_1': { m1: { title: 'RAT/SAT Sesi 1 - Kelas 8C', content: 'Sesi pertama kelas 8C memulai dengan pengenalan menyeluruh tentang BK kontemporer.' }, m2: ['Bagaimana BK berkembang di era digital?', 'Apa perubahan kebutuhan siswa masa kini?', 'Bagaimana BK responsif terhadap perubahan zaman?'], m3: 'Modul 1: BK Kontemporer dan Adaptasi di Era Digital', m4: 'https://example.com/video-bk-8c-1', m5: [{ no: 1, anggota: ['Peserta 8C-1', 'Peserta 8C-2', 'Peserta 8C-3'] }, { no: 2, anggota: ['Peserta 8C-4', 'Peserta 8C-5'] }], m6: 'Worksheet: Analisis kebutuhan siswa kontemporer', m7: { soal: 12, waktu: 35, tipe: 'reflektif' }, m8: 'Apa perubahan terbesar dalam dunia pendidikan saat ini?', m9: ['BK harus adaptif dengan perubahan zaman', 'Literasi digital konselor sangat penting'] },
+  'c2_2': { m1: { title: 'RAT/SAT Sesi 2 - Kelas 8C', content: 'Sesi kedua membahas pendekatan berbasis kekuatan (strengths-based) dalam BK.' }, m2: ['Apa filosofi pendekatan berbasis kekuatan?', 'Bagaimana menggali kekuatan siswa?', 'Bagaimana ini berbeda dari pendekatan tradisional?'], m3: 'Modul 2: Pendekatan Berbasis Kekuatan dalam Konseling', m4: 'https://example.com/video-bk-8c-2', m5: [{ no: 1, anggota: ['Peserta 8C-6', 'Peserta 8C-7', 'Peserta 8C-8', 'Peserta 8C-9'] }, { no: 2, anggota: ['Peserta 8C-10', 'Peserta 8C-11'] }], m6: 'Worksheet: Memetakan kekuatan klien', m7: { soal: 11, waktu: 40, tipe: 'praktik' }, m8: 'Bagaimana Anda menggali kekuatan dalam konseling?', m9: ['Fokus pada kekuatan lebih efektif', 'Resiliensi siswa dapat diperkuat'] },
+  'c2_3': { m1: { title: 'RAT/SAT Sesi 3 - Kelas 8C', content: '<strong>Capaian Pembelajaran :</strong><br>a. Mahasiswa mampu menguraikan karakteristik peserta didik dan mampu menganalisis serta mengevaluasi tugas perkembangan peserta didik Sekolah Dasar (SD).<br><br>b. Mahasiswa mampu menguraikan konsep teknik assesmen dan mampu memanfaatkan data hasil assesmen kebutuhan peserta didik di sekolah Dasar (SD).<br><br><strong>Pokok Bahasan dan Sub Pokok Bahasan</strong><br>• Karakteristik dan Tugas Perkembangan Peserta Didik di SD.<br>➢ Dasar Perkembangan Kognitif dan Bahasa Serta Upaya Bimbingannya<br>➢ Perkembangan Sosial, Emosi, dan Moral Serta Upaya Bimbingannya<br><br>• Teknik Assesmen dan Data Hasil Assesmen Kebutuhan Peserta Didik di SD.<br>➢ Pengertian Asesmen' }, m2: ['Apa perbedaan yang kamu lihat pada setiap siswa di kelas?', 'Bagaimana cara mengetahui perkembangan siswa sudah sesuai atau belum?', 'Untuk apa guru melakukan penilaian (asesmen) pada siswa?'], m3: { text: 'Modul 3: Karakteristik Perkembangan dan Asesmen Peserta Didik SD', image: 'materi sesi 3 kelas 8bc.png' }, m4: 'https://www.youtube.com/embed/YwG9Mvnfoc0', m5: [{ no: 1, anggota: ['Peserta 8C-12', 'Peserta 8C-13', 'Peserta 8C-14', 'Peserta 8C-15'] }, { no: 2, anggota: ['Peserta 8C-16', 'Peserta 8C-17'] }], m6: 'Lembar Kerja 3: Analisis tugas perkembangan dan data asesmen', m7: { soal: 12, waktu: 35, tipe: 'analisis' }, m8: 'Analisis kasus: Interpretasi data asesmen untuk perencanaan BK', m9: ['Memahami tugas perkembangan adalah dasar BK efektif', 'Data asesmen menginformasikan strategi intervensi yang tepat'] },
+  'c2_4': { m1: { title: 'RAT/SAT Sesi 4 - Kelas 8C', content: 'Sesi keempat khusus untuk konseling krisis dan manajemen emosi siswa.' }, m2: ['Apa tanda-tanda siswa dalam krisis?', 'Bagaimana first aid konseling pada krisis?', 'Apa protokol rujukan dan kolaborasi?'], m3: 'Modul 4: Konseling Krisis dan Manajemen Emosi Ekstrem', m4: 'https://example.com/video-bk-8c-4', m5: [{ no: 1, anggota: ['Peserta 8C-18', 'Peserta 8C-19', 'Peserta 8C-20', 'Peserta 8C-21'] }, { no: 2, anggota: ['Peserta 8C-22'] }], m6: 'Worksheet: Skenario krisis dan respons', m7: { soal: 16, waktu: 50, tipe: 'skenario' }, m8: 'Bagaimana respons Anda pada situasi krisis?', m9: ['Kesiapan dan pelatihan penting untuk krisis', 'Jaringan support sangat vital'] },
+  'c2_5': { m1: { title: 'RAT/SAT Sesi 5 - Kelas 8C', content: 'Sesi kelima membahas teknologi dan inovasi dalam praktik konseling modern.' }, m2: ['Bagaimana teknologi mendukung konseling?', 'Apa etika konseling online?', 'Apa batasan dan kekurangan konseling digital?'], m3: 'Modul 5: Teknologi dalam Praktik Konseling dan E-Counseling', m4: 'https://example.com/video-bk-8c-5', m5: [{ no: 1, anggota: ['Peserta 8C-23', 'Peserta 8C-24', 'Peserta 8C-25'] }, { no: 2, anggota: ['Peserta 8C-26', 'Peserta 8C-27', 'Peserta 8C-28'] }], m6: 'Worksheet: Merancang konseling digital yang etis', m7: { soal: 13, waktu: 40, tipe: 'desain' }, m8: 'Apa etika utama e-counseling yang Anda pedulikan?', m9: ['Teknologi adalah alat, bukan pengganti empati', 'Keamanan data klien harus diprioritaskan'] },
+  'c2_6': { m1: { title: 'RAT/SAT Sesi 6 - Kelas 8C', content: 'Sesi keenam mengulas kolaborasi dengan orang tua, guru, dan tim multidisiplin.' }, m2: ['Bagaimana kolaborasi efektif dengan orang tua?', 'Apa peran guru dalam mendukung BK?', 'Bagaimana membangun tim konseling yang solid?'], m3: 'Modul 6: Kolaborasi dan Partnership dalam Sistem Bimbingan', m4: 'https://example.com/video-bk-8c-6', m5: [{ no: 1, anggota: ['Peserta 8C-29', 'Peserta 8C-30', 'Peserta 8C-31', 'Peserta 8C-32'] }], m6: 'Worksheet: Merancang strategi kolaborasi', m7: { soal: 12, waktu: 35, tipe: 'perencanaan' }, m8: 'Bagaimana Anda akan membangun kolaborasi?', m9: ['Kolaborasi memperkuat efektivitas BK', 'Komunikasi terbuka adalah kunci'] },
+  'c2_7': { m1: { title: 'RAT/SAT Sesi 7 - Kelas 8C', content: 'Sesi ketujuh fokus pada etika profesional, advokasi, dan tanggung jawab sosial konselor.' }, m2: ['Apa kode etik konselor yang harus dipatuhi?', 'Bagaimana advokasi untuk kepentingan klien?', 'Apa tanggung jawab sosial konselor terhadap masyarakat?'], m3: 'Modul 7: Etika Profesional, Advokasi, dan Tanggung Jawab Sosial', m4: 'https://example.com/video-bk-8c-7', m5: [{ no: 1, anggota: ['Peserta 8C terakhir - diskusi pleno'] }], m6: 'Worksheet: Dilema etika dan refleksi', m7: { soal: 15, waktu: 45, tipe: 'etika' }, m8: 'Bagaimana Anda menangani dilema etika?', m9: ['Integritas konselor adalah prioritas utama', 'Advokasi melindungi hak klien'] },
+  'c2_8': { m1: { title: 'RAT/SAT Sesi 8 - Kelas 8C', content: 'Sesi terakhir adalah perencanaan pengembangan karir dan komitmen jangka panjang.' }, m2: ['Bagaimana pengembangan profesional berkelanjutan?', 'Apa peluang spesialisasi dalam bidang BK?', 'Bagaimana membangun identitas profesional yang kuat?'], m3: 'Modul 8: Pengembangan Karir dan Komitmen Seumur Hidup', m4: 'https://example.com/video-bk-8c-8', m5: [{ no: 1, anggota: ['Semua peserta kelas 8C - alumni network'] }], m6: 'Worksheet: Rencana pengembangan karir 5 tahun', m7: { soal: 18, waktu: 55, tipe: 'proyek_final' }, m8: 'Rencanakan perjalanan profesional Anda sebagai konselor', m9: ['Pembelajaran berkelanjutan adalah investasi', 'Komunitas profesional mendukung perkembangan'] },
+
+  // KELAS 6A - SPDA4401 (c3)
+  'c3_1': { m1: { title: 'RAT/SAT Sesi 1 - Kelas 6A', content: 'Pengenalan karakteristik dan klasifikasi anak berkebutuhan khusus (ABK) di sekolah inklusif.' }, m2: ['Apa definisi dan klasifikasi ABK?', 'Bagaimana mengidentifikasi ABK di kelas reguler?', 'Apa hak dan kebutuhan ABK?'], m3: 'Modul 1: Karakteristik Anak Berkebutuhan Khusus dan Identifikasi', m4: 'https://example.com/video-abk-1', m5: [{ no: 1, anggota: ['Guru A', 'Guru B', 'Asisten C'] }, { no: 2, anggota: ['Guru D', 'Guru E'] }], m6: 'Worksheet: Observasi dan identifikasi ABK di sekolah', m7: { soal: 12, waktu: 40, tipe: 'observasi' }, m8: 'Apa pengalaman Anda bertemu dengan ABK?', m9: ['Inklusivitas adalah hak dasar', 'Setiap anak memiliki potensi unik'] },
+  'c3_2': { m1: { title: 'RAT/SAT Sesi 2 - Kelas 6A', content: 'Strategi adaptasi kurikulum dan pembelajaran yang responsif untuk semua siswa.' }, m2: ['Bagaimana mengadaptasi kurikulum untuk ABK?', 'Apa strategi pembelajaran yang inklusif?', 'Bagaimana modifikasi media dan metode?'], m3: 'Modul 2: Adaptasi Kurikulum dan Pembelajaran Inklusif', m4: 'https://example.com/video-abk-2', m5: [{ no: 1, anggota: ['Tim Kurikulum A', 'Tim Kurikulum B', 'Tim Kurikulum C', 'Tim Kurikulum D'] }, { no: 2, anggota: ['Tim Kurikulum E'] }], m6: 'Worksheet: Desain pembelajaran adaptif', m7: { soal: 14, waktu: 45, tipe: 'desain' }, m8: 'Rancang pembelajaran inklusif untuk kelas Anda', m9: ['Fleksibilitas kurikulum sangat penting', 'Semua siswa bisa belajar efektif'] },
+  'c3_3': { m1: { title: 'RAT/SAT Sesi 3 - Kelas 6A', content: 'Deteksi dini dan intervensi untuk mengatasi hambatan perkembangan pada anak usia dini.' }, m2: ['Apa tanda-tanda hambatan perkembangan?', 'Bagaimana melakukan skrining dan deteksi dini?', 'Apa intervensi awal yang bisa dilakukan?'], m3: 'Modul 3: Deteksi Dini dan Intervensi Perkembangan', m4: 'https://example.com/video-abk-3', m5: [{ no: 1, anggota: ['Fasilitator 1', 'Fasilitator 2', 'Fasilitator 3'] }, { no: 2, anggota: ['Fasilitator 4', 'Fasilitator 5', 'Fasilitator 6'] }], m6: 'Worksheet: Merancang program deteksi dini', m7: { soal: 13, waktu: 42, tipe: 'perencanaan' }, m8: 'Bagaimana program deteksi dini di tempat Anda?', m9: ['Deteksi dini mencegah masalah lebih lanjut', 'Intervensi awal sangat efektif'] },
+  'c3_4': { m1: { title: 'RAT/SAT Sesi 4 - Kelas 6A', content: 'Strategi komunikasi dan kolaborasi dengan orang tua serta pihak-pihak terkait.' }, m2: ['Bagaimana komunikasi efektif dengan orang tua ABK?', 'Apa peran setiap pihak dalam layanan ABK?', 'Bagaimana mengatasi stigma dan stereotip?'], m3: 'Modul 4: Komunikasi dan Kolaborasi Multipihak', m4: 'https://example.com/video-abk-4', m5: [{ no: 1, anggota: ['Koordinator Program', 'Pendamping 1', 'Pendamping 2', 'Pendamping 3'] }, { no: 2, anggota: ['Pendamping 4', 'Pendamping 5'] }], m6: 'Worksheet: Simulasi komunikasi dengan orang tua', m7: { soal: 11, waktu: 35, tipe: 'role_play' }, m8: 'Bagaimana Anda berkomunikasi dengan orang tua ABK?', m9: ['Komunikasi transparan membangun kepercayaan', 'Kolaborasi adalah kunci kesuksesan'] },
+  'c3_5': { m1: { title: 'RAT/SAT Sesi 5 - Kelas 6A', content: 'Penanganan perilaku tantangan dan manajemen emosi pada siswa ABK.' }, m2: ['Apa penyebab perilaku tantangan pada ABK?', 'Bagaimana strategi penanganan yang positif?', 'Kapan perlu rujukan ke spesialis?'], m3: 'Modul 5: Manajemen Perilaku dan Emosi pada ABK', m4: 'https://example.com/video-abk-5', m5: [{ no: 1, anggota: ['Mentor 1', 'Mentor 2', 'Mentor 3'] }, { no: 2, anggota: ['Mentor 4', 'Mentor 5', 'Mentor 6', 'Mentor 7'] }], m6: 'Worksheet: Analisis dan penanganan perilaku', m7: { soal: 15, waktu: 48, tipe: 'kasus' }, m8: 'Bagaimana Anda menangani perilaku tantangan?', m9: ['Disiplin positif lebih efektif', 'Pemahaman emosi adalah kunci'] },
+  'c3_6': { m1: { title: 'RAT/SAT Sesi 6 - Kelas 6A', content: 'Pengembangan kemandirian dan keterampilan hidup praktis untuk persiapan masa depan ABK.' }, m2: ['Bagaimana mengembangkan kemandirian siswa ABK?', 'Apa keterampilan hidup yang penting?', 'Bagaimana mempersiapkan transisi ke kehidupan kerja?'], m3: 'Modul 6: Pengembangan Kemandirian dan Life Skills', m4: 'https://example.com/video-abk-6', m5: [{ no: 1, anggota: ['Pelatih Keterampilan A', 'Pelatih Keterampilan B', 'Pelatih Keterampilan C', 'Pelatih Keterampilan D'] }], m6: 'Worksheet: Program pengembangan kemandirian', m7: { soal: 12, waktu: 40, tipe: 'program' }, m8: 'Rancang program life skills untuk siswa Anda', m9: ['Kemandirian adalah tujuan utama', 'Keterampilan praktis sangat berguna'] },
+  'c3_7': { m1: { title: 'RAT/SAT Sesi 7 - Kelas 6A', content: 'Inklusi sosial, integrasi peer, dan pengembangan hubungan interpersonal siswa ABK.' }, m2: ['Bagaimana memfasilitasi inklusi sosial?', 'Apa peran teman sebaya dalam proses inklusi?', 'Bagaimana mengatasi isolasi sosial?'], m3: 'Modul 7: Inklusi Sosial dan Pengembangan Hubungan Interpersonal', m4: 'https://example.com/video-abk-7', m5: [{ no: 1, anggota: ['Fasilitator Sosial 1', 'Fasilitator Sosial 2', 'Fasilitator Sosial 3'] }, { no: 2, anggota: ['Fasilitator Sosial 4', 'Fasilitator Sosial 5', 'Fasilitator Sosial 6'] }], m6: 'Worksheet: Program inklusi sosial dan peer support', m7: { soal: 14, waktu: 45, tipe: 'program' }, m8: 'Bagaimana Anda fasilitasi persahabatan inklusif?', m9: ['Peer support memperkuat inklusi', 'Hubungan sosial penting untuk perkembangan'] },
+  'c3_8': { m1: { title: 'RAT/SAT Sesi 8 - Kelas 6A', content: 'Evaluasi program, advokasi penyandang disabilitas, dan komitmen terhadap inklusi sejati.' }, m2: ['Bagaimana mengevaluasi keberhasilan program layanan ABK?', 'Apa peran advokasi dalam perjuangan inklusi?', 'Bagaimana membangun sekolah yang benar-benar inklusif?'], m3: 'Modul 8: Evaluasi Program dan Advokasi untuk Inklusi Sejati', m4: 'https://example.com/video-abk-8', m5: [{ no: 1, anggota: ['Semua peserta kelas 6A'] }], m6: 'Worksheet: Rencana aksi inklusi jangka panjang', m7: { soal: 18, waktu: 55, tipe: 'komprehensif' }, m8: 'Apa komitmen Anda terhadap inklusi berkelanjutan?', m9: ['Evaluasi data mendorong perbaikan', 'Advokasi adalah tanggung jawab semua'] },
+
+  // KELAS 5A - SPGK4410 (c4)
+  'c4_1': { m1: { title: 'RAT/SAT Sesi 1 - Kelas 5A', content: 'Pengenalan teori dan prinsip dasar strategi pembelajaran kontemporer di era digital.' }, m2: ['Apa teori pembelajaran terkini?', 'Bagaimana pembelajaran berubah di era digital?', 'Apa prinsip pembelajaran yang masih relevan?'], m3: 'Modul 1: Teori Pembelajaran dan Paradigma Kontemporer', m4: 'https://example.com/video-spk-1', m5: [{ no: 1, anggota: ['Peserta Kelas 5A Grup 1', 'Peserta Kelas 5A Grup 2', 'Peserta Kelas 5A Grup 3'] }, { no: 2, anggota: ['Peserta Kelas 5A Grup 4', 'Peserta Kelas 5A Grup 5'] }], m6: 'Worksheet: Analisis teori pembelajaran dalam praktik', m7: { soal: 13, waktu: 40, tipe: 'refleksi' }, m8: 'Teori pembelajaran mana yang Anda paling setujui?', m9: ['Pembelajaran adalah konstruksi aktif', 'Konteks mempengaruhi proses belajar'] },
+  'c4_2': { m1: { title: 'RAT/SAT Sesi 2 - Kelas 5A', content: 'Strategi pembelajaran aktif dan peran guru sebagai fasilitator pembelajaran.' }, m2: ['Apa karakteristik pembelajaran aktif?', 'Bagaimana peran guru berubah?', 'Apa metode pembelajaran aktif yang efektif?'], m3: 'Modul 2: Pembelajaran Aktif dan Fasilitasi Guru', m4: 'https://example.com/video-spk-2', m5: [{ no: 1, anggota: ['Fasilitator Pembelajaran A', 'Fasilitator Pembelajaran B', 'Fasilitator Pembelajaran C', 'Fasilitator Pembelajaran D'] }, { no: 2, anggota: ['Fasilitator Pembelajaran E', 'Fasilitator Pembelajaran F'] }], m6: 'Worksheet: Mendesain pembelajaran aktif', m7: { soal: 14, waktu: 45, tipe: 'desain' }, m8: 'Rancang skenario pembelajaran aktif', m9: ['Guru adalah fasilitator, bukan transmitter', 'Keterlibatan siswa adalah kunci sukses'] },
+  'c4_3': { m1: { title: 'RAT/SAT Sesi 3 - Kelas 5A', content: 'Pembelajaran berbasis masalah (Problem-Based Learning) dan pembelajaran proyek (Project-Based Learning).' }, m2: ['Bagaimana PBL meningkatkan berpikir kritis?', 'Apa perbedaan PBL dan ProjectBL?', 'Bagaimana mengelola kelas dengan kedua metode?'], m3: 'Modul 3: Problem-Based Learning dan Project-Based Learning', m4: 'https://example.com/video-spk-3', m5: [{ no: 1, anggota: ['Tim Proyek 1', 'Tim Proyek 2', 'Tim Proyek 3'] }, { no: 2, anggota: ['Tim Proyek 4', 'Tim Proyek 5', 'Tim Proyek 6', 'Tim Proyek 7'] }], m6: 'Worksheet: Merancang PBL dan ProjectBL', m7: { soal: 15, waktu: 50, tipe: 'desain' }, m8: 'Apa masalah/proyek otentik untuk siswa Anda?', m9: ['Problem dan project mendekatkan pembelajaran dengan realitas', 'Kolaborasi diperkuat melalui proyek'] },
+  'c4_4': { m1: { title: 'RAT/SAT Sesi 4 - Kelas 5A', content: 'Pembelajaran kooperatif dan pentingnya kerja sama tim dalam mencapai tujuan bersama.' }, m2: ['Bagaimana struktur pembelajaran kooperatif?', 'Apa peran setiap anggota tim?', 'Bagaimana mengevaluasi kontribusi individual dalam grup?'], m3: 'Modul 4: Pembelajaran Kooperatif dan Dinamika Kelompok', m4: 'https://example.com/video-spk-4', m5: [{ no: 1, anggota: ['Kelompok Belajar A', 'Kelompok Belajar B', 'Kelompok Belajar C', 'Kelompok Belajar D'] }, { no: 2, anggota: ['Kelompok Belajar E', 'Kelompok Belajar F'] }], m6: 'Worksheet: Strategi pembelajaran kooperatif', m7: { soal: 12, waktu: 40, tipe: 'praktik' }, m8: 'Bagaimana Anda mengelola dinamika kelompok?', m9: ['Kerja sama meningkatkan hasil belajar', 'Setiap anggota penting untuk kesuksesan'] },
+  'c4_5': { m1: { title: 'RAT/SAT Sesi 5 - Kelas 5A', content: 'Integrasi teknologi digital dalam pembelajaran untuk meningkatkan engagement dan aksesibilitas.' }, m2: ['Apa tools digital yang mendukung pembelajaran?', 'Bagaimana mengintegrasikan teknologi secara bermakna?', 'Apa tantangan dan solusi pembelajaran digital?'], m3: 'Modul 5: Integrasi Teknologi dalam Pembelajaran Kontemporer', m4: 'https://example.com/video-spk-5', m5: [{ no: 1, anggota: ['IT Coordinator 1', 'IT Coordinator 2', 'IT Coordinator 3'] }, { no: 2, anggota: ['IT Coordinator 4', 'IT Coordinator 5', 'IT Coordinator 6', 'IT Coordinator 7'] }], m6: 'Worksheet: Merancang pembelajaran blended dan digital', m7: { soal: 13, waktu: 45, tipe: 'desain' }, m8: 'Apa teknologi yang paling tepat untuk pembelajaran Anda?', m9: ['Teknologi adalah alat, bukan tujuan', 'Literasi digital guru sangat penting'] },
+   'c4_6': { m1: { title: 'RAT/SAT Sesi 6 - Kelas 5A', content: 'Penilaian otentik dan pengembangan kompetensi abad ke-21 (4Cs: Critical Thinking, Creativity, Communication, Collaboration).' }, m2: ['Apa itu penilaian otentik dan berbeda dengan tes tradisional?', 'Bagaimana mengukur kompetensi 4C?', 'Apa portofolio dan bagaimana memanfaatkannya?'], m3: 'Modul 6: Penilaian Otentik dan Kompetensi Abad 21', m4: 'https://example.com/video-spk-6', m5: [{ no: 1, anggota: ['Penilai 1', 'Penilai 2', 'Penilai 3', 'Penilai 4'] }, { no: 2, anggota: ['Penilai 5', 'Penilai 6'] }], m6: 'Worksheet: Merancang rubrik penilaian otentik', m7: { soal: 14, waktu: 48, tipe: 'desain' }, m8: 'Rancang sistem penilaian otentik untuk mata pelajaran Anda', m9: ['Penilaian otentik lebih bermakna', '4C adalah kompetensi masa depan'] },
+  'c4_7': { m1: { title: 'RAT/SAT Sesi 7 - Kelas 5A', content: 'Pembelajaran yang responsif terhadap keberagaman gaya belajar dan kebutuhan individual siswa.' }, m2: ['Apa teori gaya belajar (visual, auditori, kinestetik)?', 'Bagaimana mengakomodasi keberagaman dalam satu kelas?', 'Bagaimana differentiated instruction diterapkan?'], m3: 'Modul 7: Pembelajaran Diferensiasi dan Responsif Keberagaman', m4: 'https://example.com/video-spk-7', m5: [{ no: 1, anggota: ['Tutor 1', 'Tutor 2', 'Tutor 3'] }, { no: 2, anggota: ['Tutor 4', 'Tutor 5', 'Tutor 6', 'Tutor 7', 'Tutor 8'] }], m6: 'Worksheet: Strategi pembelajaran diferensiasi', m7: { soal: 13, waktu: 45, tipe: 'desain' }, m8: 'Bagaimana Anda mengakomodasi gaya belajar berbeda?', m9: ['Setiap siswa belajar dengan cara mereka sendiri', 'Diferensiasi adalah kunci inklusi akademik'] },
+  'c4_8': { m1: { title: 'RAT/SAT Sesi 8 - Kelas 5A', content: 'Inovasi pembelajaran, refleksi praktik, dan pengembangan profesional guru berkelanjutan.' }, m2: ['Apa inovasi terbaru dalam pembelajaran?', 'Bagaimana melakukan refleksi diri terhadap praktik mengajar?', 'Bagaimana guru terus berinovasi dan berkembang?'], m3: 'Modul 8: Inovasi dan Pengembangan Profesional Guru', m4: 'https://example.com/video-spk-8', m5: [{ no: 1, anggota: ['Semua peserta kelas 5A'] }], m6: 'Worksheet: Rencana inovasi pembelajaran dan pengembangan diri', m7: { soal: 18, waktu: 60, tipe: 'proyek_final' }, m8: 'Rencana inovasi pembelajaran 5 tahun ke depan', m9: ['Inovasi berkelanjutan adalah keharusan', 'Refleksi adalah fondasi perbaikan praktik'] }
+};
+
+let currentCourse = JSON.parse(localStorage.getItem('current_course') || 'null');
+let currentSession = parseInt(localStorage.getItem('current_session') || '1');
+let currentMenu = JSON.parse(localStorage.getItem('current_menu') || 'null');
+let currentStudent = JSON.parse(localStorage.getItem('current_student') || 'null');
+
+
+
+function showScreen(id) {
+  ['login', 'home', 'sessions', 'menu', 'content', 'tutor-login', 'tutor-dash'].forEach(s => {
+    const el = document.getElementById('screen-' + s);
+    if (el) el.style.display = s === id ? 'block' : 'none';
+  });
+  document.getElementById('app').scrollTop = 0;
+}
+
+function togglePassword(inputId, iconId) {
+  const input = document.getElementById(inputId);
+  const icon = document.getElementById(iconId);
+  if (input.type === 'password') {
+    input.type = 'text';
+    icon.setAttribute('data-lucide', 'eye-off');
+  } else {
+    input.type = 'password';
+    icon.setAttribute('data-lucide', 'eye');
+  }
+  lucide.createIcons();
+}
+
+function renderCourses() {
+  const el = document.getElementById('course-list');
+  el.innerHTML = courses.map((c, i) => `
+    <div class="rounded-2xl p-4 menu-item cursor-pointer anim-slide-up stagger-${Math.min(i+1,4)}" 
+         style="background:#1e293b;border:1px solid #334155;" 
+         onclick="openCourse('${c.id}')">
+      <div class="flex items-start gap-3">
+        <div class="w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0" style="background:${c.color}20;">
+          <i data-lucide="${c.icon}" style="width:22px;height:22px;color:${c.color};"></i>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs font-bold px-2 py-0.5 rounded-md" style="background:${c.color}20;color:${c.color};">Kelas ${c.kelas}</span>
+          </div>
+          <p class="text-sm font-bold truncate" style="color:#f1f5f9;">${c.nama}</p>
+          <p class="text-xs mt-0.5" style="color:#64748b;">${c.kode} · 8 Sesi</p>
+        </div>
+        <i data-lucide="chevron-right" style="width:18px;height:18px;color:#475569;" class="flex-shrink-0 mt-2"></i>
+      </div>
+    </div>
+  `).join('');
+  lucide.createIcons();
+}
+
+function openCourse(id) {
+  currentCourse = courses.find(c => c.id === id);
+  localStorage.setItem('current_course', JSON.stringify(currentCourse));
+  
+  // Jika sudah ada data mahasiswa di localStorage, langsung buka sesi
+  if (currentStudent && currentStudent.kelas === currentCourse.kelas) {
+    showScreen('sessions');
+    renderSessions();
+    return;
+  }
+  
+  // Jika belum login atau beda kelas, minta login
+  showScreen('login');
+  const emailEl = document.getElementById('input-email');
+  const nimEl = document.getElementById('input-nim-pass');
+  if (emailEl) emailEl.value = '';
+  if (nimEl) nimEl.value = '';
+  document.getElementById('error-login').style.display = 'none';
+}
+
+function openSession(num) {
+  currentSession = num;
+  localStorage.setItem('current_session', num);
+  const hdr = document.getElementById('menu-header');
+  hdr.innerHTML = `
+    <div class="flex items-center gap-2 mb-1">
+      <span class="text-xs font-bold px-2 py-0.5 rounded-md" style="background:${currentCourse.color}20;color:${currentCourse.color};">Kelas ${currentCourse.kelas}</span>
+      <span class="text-xs" style="color:#64748b;">Sesi ${num}</span>
+    </div>
+    <h1 class="text-lg font-extrabold" style="color:#f1f5f9;">${currentCourse.nama}</h1>
+  `;
+  const list = document.getElementById('menu-list');
+  list.innerHTML = menuTemplate.map((m, i) => `
+    <div class="rounded-xl p-3.5 menu-item cursor-pointer anim-slide-up stagger-${Math.min(i+1,4)}" 
+         style="background:#1e293b;border:1px solid #334155;" 
+         onclick="openMenu('${m.id}')">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:${currentCourse.color}15;">
+          <i data-lucide="${m.icon}" style="width:18px;height:18px;color:${currentCourse.color};"></i>
+        </div>
+        <div class="flex-1">
+          <p class="text-sm font-bold" style="color:#f1f5f9;">${m.nama}</p>
+          <p class="text-xs" style="color:#64748b;">${m.desc}</p>
+        </div>
+        <i data-lucide="chevron-right" style="width:16px;height:16px;color:#475569;"></i>
+      </div>
+    </div>
+  `).join('');
+  showScreen('menu');
+  lucide.createIcons();
+}
+
+function openMenu(id) {
+  currentMenu = menuTemplate.find(m => m.id === id);
+  localStorage.setItem('current_menu', JSON.stringify(currentMenu));
+  
+  if (!currentStudent || !currentCourse) {
+    showScreen('home');
+    return;
+  }
+
+  const area = document.getElementById('content-area');
+  if (!area) return;
+
+  showScreen('content');
+  
+  // UPDATE HEADER CONTENT SCREEN
+  setTimeout(() => {
+    const headerEl = document.getElementById('content-header');
+    if (headerEl) {
+      headerEl.innerHTML = `
+        <div class="mb-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-xs font-bold px-2 py-0.5 rounded-md" style="background:${currentCourse.color}20;color:${currentCourse.color};">Kelas ${currentCourse.kelas}</span>
+            <span class="text-xs font-medium px-2 py-0.5 rounded-md" style="background:#334155;color:#94a3b8;">Sesi ${currentSession}</span>
+          </div>
+          <h2 class="text-base font-extrabold mb-1" style="color:#f1f5f9;">${currentMenu.nama}</h2>
+          <p class="text-xs" style="color:#94a3b8;">${currentCourse.nama}</p>
+        </div>
+      `;
+    }
+  }, 50);
+  
+  // AMBIL DATA SPESIFIK
+  const sessionKey = `${currentCourse.id}_${currentSession}`;
+  const sessionData = sessionContent[sessionKey];
+  
+  if (!sessionData || !sessionData[id]) {
+    area.innerHTML = `<div class="rounded-xl p-4" style="background:#1e293b;border:1px solid #334155;">
+      <p class="text-xs" style="color:#94a3b8;">Data untuk sesi ini belum tersedia.</p>
+    </div>`;
+    return;
+  }
+
+  const cc = currentCourse.color;
+  const data = sessionData[id];
+  let content = '';
+
+  window.customQuestion = "Kirim Jawaban/Respon";
+  if (id === 'm1' && currentSession === 3 && (currentCourse.kelas === '8B' || currentCourse.kelas === '8C')) {
+    window.customQuestion = "Usaha apa yang Anda lakukan untuk mencapai capaian pembelajaran pada sesi ini?";
+  }
+
+  if (id === 'm1') {
+    content = `<div class="space-y-3">
+      <div class="rounded-xl p-4" style="background:#1e293b;border:1px solid #334155;">
+        <h3 class="text-sm font-bold mb-2" style="color:#f1f5f9;">${data.title}</h3>
+        <p class="text-xs leading-relaxed" style="color:#94a3b8;">${data.content}</p>
+      </div>
+    </div>`;
+  } else if (id === 'm3') {
+    const isObject = typeof data === 'object' && data !== null;
+    const imageUrl = isObject ? data.image : '';
+    const textContent = isObject ? data.text : data;
+
+    if (imageUrl) {
+      content = `<div class="anim-scale">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-bold" style="color:#f1f5f9;">Materi Visual</h3>
+          <a href="${imageUrl}" target="_blank" class="text-[10px] px-2 py-1 rounded-md flex items-center gap-1" style="background:#334155;color:#94a3b8;">
+            <i data-lucide="maximize-2" style="width:10px;height:10px;"></i> Lihat Full
+          </a>
+        </div>
+        <div class="rounded-xl overflow-hidden shadow-2xl bg-white" style="border:1px solid #334155;">
+          <div class="relative overflow-x-auto hide-scrollbar">
+            <img src="${imageUrl}" 
+                 class="w-full h-auto block relative z-10" 
+                 style="min-width: 100%; object-fit: contain;"
+                 loading="lazy" 
+                 onclick="window.open(this.src, '_blank')"
+                 onerror="this.style.display='none'; this.parentElement.querySelector('.img-error').style.display='flex';">
+            <div class="img-error absolute inset-0 flex-col items-center justify-center p-12 text-center" style="display:none; background:#1e293b;">
+              <i data-lucide="image-off" style="width:24px;height:24px;color:#64748b;margin-bottom:8px;"></i>
+              <p class="text-xs" style="color:#64748b;">Gambar materi tidak ditemukan</p>
+            </div>
+          </div>
+        </div>
+        <p class="text-[10px] mt-3 text-center" style="color:#64748b;">💡 Tips: Tap gambar untuk melihat ukuran penuh</p>
+      </div>`;
+    } else {
+      content = `<div class="rounded-xl p-5 anim-scale" style="background:#1e293b;border:1px solid #334155;">
+        <div class="flex items-center gap-3 mb-4"><div class="w-10 h-10 rounded-lg flex items-center justify-center" style="background:${cc}20;"><i data-lucide="book-open" style="width:20px;height:20px;color:${cc};"></i></div><h3 class="text-sm font-bold" style="color:#f1f5f9;">Materi Pembelajaran</h3></div>
+        <p class="text-xs leading-relaxed" style="color:#94a3b8;">${textContent}</p>
+      </div>`;
+    }
+
+  } else if (id === 'm4') {
+    const isYoutube = data.includes('youtube.com') || data.includes('youtu.be');
+    content = `<div class="space-y-4 anim-scale">
+      <div class="rounded-2xl overflow-hidden shadow-2xl bg-black" style="border:1px solid #334155;">
+        ${isYoutube ? `
+          <div class="aspect-video w-full">
+            <iframe class="w-full h-full" src="${data}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+          </div>
+        ` : `
+          <div class="aspect-video flex items-center justify-center" style="background:linear-gradient(135deg,#0f172a,#1e293b);">
+            <div class="w-16 h-16 rounded-full flex items-center justify-center" style="background:${cc};">
+              <i data-lucide="play" style="width:28px;height:28px;color:#0f172a;margin-left:3px;"></i>
+            </div>
+          </div>
+        `}
+      </div>
+      <div class="p-4 rounded-xl" style="background:#1e293b;border:1px solid #334155;">
+        <div class="flex items-center gap-2 mb-2">
+          <i data-lucide="info" style="width:14px;height:14px;color:${cc};"></i>
+          <p class="text-xs font-bold" style="color:#f1f5f9;">Informasi Video</p>
+        </div>
+        <p class="text-[11px]" style="color:#94a3b8;">Silakan tonton video pembelajaran di atas untuk memperdalam pemahaman materi Sesi ${currentSession}.</p>
+      </div>
+    </div>`;
+  } else if (id === 'm5') {
+    content = `<div class="space-y-3">
+      ${data.map(group => `
+        <div class="rounded-xl p-4" style="background:#1e293b;border:1px solid #334155;">
+          <div class="flex items-center gap-2 mb-3"><div class="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs" style="background:${cc}20;color:${cc};">${group.no}</div><h3 class="text-sm font-bold" style="color:#f1f5f9;">Kelompok ${group.no}</h3></div>
+          <div class="flex flex-wrap gap-1.5">
+            ${group.anggota.map(a => `<span class="text-xs px-2.5 py-1 rounded-full" style="background:#0f172a;color:#94a3b8;">${a}</span>`).join('')}
+          </div>
+        </div>
+      `).join('')}
+    </div>`;
+  } else if (id === 'm6') {
+    content = `<div class="space-y-3">
+      <div class="rounded-xl p-4" style="background:${cc}10;border:1px solid ${cc}30;">
+        <div class="flex items-center gap-2 mb-2"><i data-lucide="clipboard-list" style="width:18px;height:18px;color:${cc};"></i><h3 class="text-sm font-bold" style="color:${cc};">LKM</h3></div>
+        <p class="text-xs" style="color:#94a3b8;">${data}</p>
+      </div>
+    </div>`;
+  } else if (id === 'm7') {
+    content = `<div class="space-y-3">
+      <div class="rounded-xl p-4" style="background:#1e293b;border:1px solid #334155;">
+        <div class="flex items-center gap-2 mb-3"><i data-lucide="trophy" style="width:18px;height:18px;color:${cc};"></i><h3 class="text-sm font-bold" style="color:#f1f5f9;">Quiz</h3></div>
+        <div class="flex items-center gap-4 mb-3">
+          <div><p class="text-lg font-extrabold" style="color:${cc};">${data.soal}</p><p class="text-xs" style="color:#64748b;">Soal</p></div>
+          <div class="w-px h-8" style="background:#334155;"></div>
+          <div><p class="text-lg font-extrabold" style="color:#f1f5f9;">${data.waktu}</p><p class="text-xs" style="color:#64748b;">Menit</p></div>
+          <div class="w-px h-8" style="background:#334155;"></div>
+          <div><p class="text-xs font-medium" style="color:${cc};">${data.tipe}</p></div>
+        </div>
+        <button class="w-full py-3 rounded-xl text-sm font-bold" style="background:${cc};color:#0f172a;">Mulai Quiz</button>
+      </div>
+    </div>`;
+  } else if (id === 'm8') {
+    content = `<div class="space-y-3">
+      <div class="rounded-xl p-4" style="background:#1e293b;border:1px solid #334155;">
+        <div class="flex items-center gap-2 mb-3"><i data-lucide="message-circle" style="width:18px;height:18px;color:${cc};"></i><h3 class="text-sm font-bold" style="color:#f1f5f9;">Refleksi</h3></div>
+        <p class="text-xs mb-3" style="color:#94a3b8;">${data}</p>
+      </div>
+    </div>`;
+  } else if (id === 'm9') {
+    content = `<div class="space-y-3">
+      <div class="rounded-xl p-4" style="background:#1e293b;border:1px solid #334155;">
+        <div class="flex items-center gap-2 mb-3"><i data-lucide="list" style="width:18px;height:18px;color:${cc};"></i><h3 class="text-sm font-bold" style="color:#f1f5f9;">Rangkuman</h3></div>
+        <div class="space-y-2">
+          ${data.map(item => `<p class="text-xs" style="color:#94a3b8;">✓ ${item}</p>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  area.innerHTML = `
+    <div class="space-y-4">
+      ${content}
+      <div id="global-answer-section" class="mt-8 pt-6 border-t border-slate-700">
+        <div class="rounded-xl p-5" style="background:#1e293b;border:1px solid #334155;">
+          <div class="flex items-center gap-2 mb-4">
+            <i data-lucide="message-square" style="width:18px;height:18px;color:${cc};"></i>
+            <h3 class="text-sm font-bold leading-relaxed" style="color:#f1f5f9;">${window.customQuestion}</h3>
+          </div>
+          <div id="student-answer-form">
+            <textarea id="textarea-global" rows="4" 
+              class="w-full rounded-xl bg-slate-900 border border-slate-700 text-white p-3 text-xs mb-3" 
+              placeholder="Tuliskan jawaban atau tanggapan Anda di sini..." required></textarea>
+            <button onclick="submitGlobalAnswer()" id="btn-submit-global" 
+              class="w-full py-3 rounded-xl text-sm font-bold shadow-lg" 
+              style="background:${cc};color:#0f172a;">Kirim Ke Tutor</button>
+          </div>
+          <div id="feedback-display" class="mt-4 hidden">
+             <div class="p-4 rounded-xl bg-fuchsia-600/10 border border-fuchsia-500/20">
+               <p class="text-[10px] font-bold text-fuchsia-400 mb-1">DIBALAS OLEH TUTOR:</p>
+               <p id="feedback-content" class="text-xs text-white leading-relaxed italic"></p>
+               <div class="mt-2" id="feedback-grade-val"></div>
+             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  lucide.createIcons();
+  checkExistingSubmission();
+}
+
+async function filterTutorData(kelas) {
+  tutorFilter = kelas;
+  loadTutorDashboard();
+  const buttons = document.querySelectorAll('#screen-tutor-dash button');
+  buttons.forEach(btn => {
+    if (['Semua', '8B', '8C', '6A', '5A'].includes(btn.textContent)) {
+      const isActive = btn.textContent === (kelas === 'all' ? 'Semua' : kelas);
+      btn.className = isActive 
+        ? "px-4 py-2 rounded-xl text-xs font-bold bg-fuchsia-600 text-white shadow-lg"
+        : "px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300";
+    }
+  });
+}
+
+async function loadTutorDashboard() {
+  const listEl = document.getElementById('tutor-submissions-list');
+  listEl.innerHTML = '<div class="text-center py-10"><p class="text-xs text-slate-500">Memuat data...</p></div>';
+  const submissions = await window.dataSdk.list();
+  if (!submissions) return;
+  const filtered = tutorFilter === 'all' ? submissions : submissions.filter(s => s.kelas === tutorFilter);
+
+  let statsHTML = '';
+  if (tutorFilter !== 'all') {
+    statsHTML = `
+      <div class="mb-6">
+        <h3 class="text-xs font-bold text-slate-500 uppercase mb-3">Progres Sesi Kelas ${tutorFilter}</h3>
+        <div class="grid grid-cols-4 gap-2">
+          ${[1,2,3,4,5,6,7,8].map(num => {
+            const count = new Set(filtered.filter(s => s.sesi === num).map(s => s.nim)).size;
+            return `<div class="bg-slate-800 border border-slate-700 rounded-xl p-2 text-center">
+              <p class="text-[9px] text-slate-500 font-bold">Sesi ${num}</p>
+              <p class="text-xs font-black ${count > 0 ? 'text-fuchsia-400' : 'text-slate-600'}">${count}</p>
+            </div>`;
+          }).join('')}
+        </div>
+      </div>
+    `;
+  }
+
+  listEl.innerHTML = statsHTML + filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at)).map(s => `
+    <div class="bg-slate-800/40 border border-slate-700 rounded-2xl p-5 mb-4 shadow-xl anim-slide-up">
+      <div class="flex items-start justify-between mb-3">
+        <div>
+          <p class="text-xs font-extrabold text-white mb-0.5">${s.nama}</p>
+          <p class="text-[10px] text-slate-400 font-medium">${s.nim} • Kelas ${s.kelas} • Sesi ${s.sesi}</p>
+        </div>
+        <div class="px-2 py-1 rounded bg-slate-900 border border-slate-700 text-[9px] font-bold text-slate-500 uppercase">${s.menu_id}</div>
+      </div>
+      <div class="bg-slate-900/50 rounded-xl p-3 mb-4 border border-slate-700/50">
+        <p class="text-[10px] text-fuchsia-400/70 font-bold mb-1 uppercase">${s.pertanyaan || 'Jawaban'}</p>
+        <p class="text-xs text-white leading-relaxed">${s.jawaban}</p>
+      </div>
+      <div class="flex items-center justify-between">
+        <p class="text-[10px] text-slate-500">${new Date(s.created_at).toLocaleString('id-ID')}</p>
+        <div class="flex items-center gap-2">
+          <button onclick="resetSubmission('${s.id}', '${s.nama}')" 
+            class="px-3 py-1.5 rounded-lg text-[10px] font-bold bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 transition-all">
+            <i data-lucide="rotate-ccw" class="w-3 h-3 inline mr-1"></i> Reset
+          </button>
+          <button onclick="openFeedbackModal('${s.id}', '${s.nama}', '${s.jawaban}', '${s.feedback || ''}', '${s.grade || ''}')" 
+            class="px-4 py-1.5 rounded-lg text-[10px] font-bold ${s.feedback ? 'bg-green-600/20 text-green-400 border border-green-500/30' : 'bg-fuchsia-600 text-white shadow-lg shadow-fuchsia-600/20'}">
+            ${s.feedback ? 'Edit Feedback' : 'Beri Feedback'}
+          </button>
+        </div>
+      </div>
+      ${s.feedback ? `
+        <div class="mt-3 pt-3 border-t border-slate-700">
+          <p class="text-[10px] text-fuchsia-400 font-bold mb-1 uppercase">Feedback Anda:</p>
+          <p class="text-xs text-slate-300 italic mb-2">"${s.feedback}"</p>
+          <div class="flex items-center gap-1">
+            ${Array.from({length: 5}, (_, i) => `<i data-lucide="star" style="width:12px;height:12px;fill:${i < parseInt(s.grade) ? '#d946ef' : 'none'};color:${i < parseInt(s.grade) ? '#d946ef' : '#334155'};"></i>`).join('')}
+            <span class="text-[9px] font-bold text-white ml-1">${['Sangat Kurang','Kurang','Cukup','Baik','Sangat Baik'][parseInt(s.grade)-1]}</span>
+          </div>
+        </div>
+      ` : ''}
+    </div>
+  `).join('');
+  lucide.createIcons();
+}
+
+function showTutorLogin() { showScreen('tutor-login'); }
+
+function submitTutorLogin() {
+  const u = document.getElementById('tutor-email').value;
+  const p = document.getElementById('tutor-password').value;
+  if (u === 'bagoes@gmail.com' && p === '11Maret2011') {
+    showScreen('tutor-dash');
+    loadTutorDashboard();
+  } else {
+    alert('Email atau Password salah!');
+  }
+}
+
+function openFeedbackModal(id, nama, jawaban, feedback, grade) {
+  currentEditingSubmissionId = id;
+  document.getElementById('feedback-student-info').textContent = `Feedback untuk ${nama}`;
+  document.getElementById('feedback-text').value = feedback;
+  document.getElementById('modal-feedback').style.display = 'flex';
+  setStarRating(grade ? parseInt(grade) : 0);
+  lucide.createIcons();
+}
+
+function closeFeedbackModal() { document.getElementById('modal-feedback').style.display = 'none'; }
+
+async function saveFeedback() {
+  const f = document.getElementById('feedback-text').value;
+  const g = document.getElementById('feedback-grade').value;
+  if (!g || g === '0') return alert('Silakan pilih rating bintang!');
+  const res = await window.dataSdk.update(currentEditingSubmissionId, { feedback: f, grade: g });
+  if (res.isOk) { closeFeedbackModal(); loadTutorDashboard(); }
+}
+
+async function resetSubmission(id, nama) {
+  if (confirm(`Apakah Anda yakin ingin me-reset jawaban dari ${nama}? Mahasiswa tersebut akan bisa mengirim ulang jawabannya.`)) {
+    const res = await window.dataSdk.delete(id);
+    if (res.isOk) {
+      alert('Jawaban berhasil di-reset!');
+      loadTutorDashboard();
+    } else {
+      alert('Gagal mereset jawaban.');
+    }
+  }
+}
+
+function setStarRating(num) {
+  const labels = { 1: 'Sangat Kurang ⭐️', 2: 'Kurang ⭐️⭐️', 3: 'Cukup ⭐️⭐️⭐️', 4: 'Baik ⭐️⭐️⭐️⭐️', 5: 'Sangat Baik ⭐️⭐️⭐️⭐️⭐️' };
+  document.getElementById('feedback-grade').value = num;
+  document.getElementById('star-label').textContent = num > 0 ? labels[num] : 'Pilih Bintang';
+  document.querySelectorAll('.star-btn i').forEach((icon, i) => {
+    icon.style.fill = i < num ? '#d946ef' : 'none';
+    icon.style.color = i < num ? '#d946ef' : '#475569';
+  });
+}
+
+async function submitGlobalAnswer() {
+  const text = document.getElementById('textarea-global').value.trim();
+  const btn = document.getElementById('btn-submit-global');
+  if (!text) return alert('Silakan isi jawaban Anda!');
+  
+  if (!currentStudent) {
+    alert('Sesi login habis. Silakan login kembali.');
+    showScreen('home');
+    return;
+  }
+  
+  btn.disabled = true;
+  btn.textContent = 'Mengirim...';
+  
+  try {
+    const payload = {
+      id: 'gs_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+      nim: currentStudent.nim,
+      nama: currentStudent.nama,
+      kelas: currentCourse.kelas,
+      sesi: currentSession,
+      menu_id: currentMenu.id,
+      pertanyaan: window.customQuestion || currentMenu.nama,
+      jawaban: text
+    };
+    
+    const res = await window.dataSdk.create(payload);
+    
+    if (res.isOk) { 
+      alert('Jawaban Berhasil Terkirim!'); 
+      checkExistingSubmission(); 
+    } else { 
+      console.error('Supabase Error:', res.error);
+      alert('Gagal mengirim ke server: ' + (res.error?.message || 'Error Unknown'));
+      btn.disabled = false; 
+      btn.textContent = 'Kirim Ke Tutor'; 
+    }
+  } catch (err) {
+    console.error('System Error:', err);
+    alert('Kesalahan Sistem: ' + err.message);
+    btn.disabled = false;
+    btn.textContent = 'Kirim Ke Tutor';
+  }
+}
+
+async function checkExistingSubmission() {
+  const submissions = await window.dataSdk.list();
+  if (!submissions) return;
+  const existing = submissions.find(s => s.nim === currentStudent?.nim && s.kelas === currentCourse?.kelas && s.sesi === currentSession && s.menu_id === currentMenu?.id);
+  const formArea = document.getElementById('student-answer-form');
+  const feedbackArea = document.getElementById('feedback-display');
+  if (existing) {
+    formArea.innerHTML = `
+      <div class="p-4 rounded-xl bg-green-500/10 border border-green-500/20 text-center mb-4">
+        <i data-lucide="check-circle" class="w-8 h-8 text-green-400 mx-auto mb-2"></i>
+        <p class="text-xs text-green-400 font-bold">Jawaban Sudah Terkirim</p>
+      </div>
+      <div class="p-4 rounded-xl bg-slate-900 border border-slate-700">
+        <p class="text-[10px] text-slate-500 font-bold mb-2 uppercase">JAWABAN ANDA:</p>
+        <p class="text-xs text-white leading-relaxed">${existing.jawaban}</p>
+      </div>
+    `;
+    if (existing.feedback) {
+      feedbackArea.classList.remove('hidden');
+      document.getElementById('feedback-content').textContent = existing.feedback;
+      document.getElementById('feedback-grade-val').innerHTML = `
+        <div class="flex items-center gap-1">
+          ${Array.from({length: 5}, (_, i) => `<i data-lucide="star" style="width:12px;height:12px;fill:${i < parseInt(existing.grade) ? '#d946ef' : 'none'};color:${i < parseInt(existing.grade) ? '#d946ef' : '#334155'};"></i>`).join('')}
+          <span class="text-[9px] font-bold text-white ml-1">${['Sangat Kurang','Kurang','Cukup','Baik','Sangat Baik'][parseInt(existing.grade)-1]}</span>
+        </div>
+      `;
+    } else {
+      feedbackArea.classList.add('hidden');
+    }
+    lucide.createIcons();
+  }
+}
+
+function logout() {
+  localStorage.removeItem('current_student');
+  localStorage.removeItem('current_course');
+  localStorage.removeItem('current_session');
+  localStorage.removeItem('current_menu');
+  location.reload();
+}
+
+
+
+function generateId() {
+  return 'ans_' + Date.now() + '_' + Math.random().toString(36).substring(2, 9);
+}
+
+window.submitJawab = async function(event) {
+  event.preventDefault();
+  
+  const textareaEl = document.getElementById('textarea-jawab');
+  const btnEl = document.getElementById('btn-simpan-jawab');
+  const selectedQuestion = document.getElementById('selected-question-text').textContent;
+  
+  if (!selectedQuestion || !textareaEl.value.trim()) {
+    alert('Silakan pilih pertanyaan dan isi jawaban');
+    return;
+  }
+  
+  // Disable button saat simpan
+  btnEl.disabled = true;
+  btnEl.textContent = 'Menyimpan...';
+  
+  const jawaban = {
+    id: generateId(),
+    nim: currentStudent.nim,
+    nama: currentStudent.nama,
+    kelas: currentCourse.kelas,
+    sesi: currentSession,
+    pertanyaan: selectedQuestion,
+    jawaban: textareaEl.value.trim(),
+    tanggal_jawab: new Date().toISOString(),
+    tanggal_login: ''
+  };
+  
+  const result = await window.dataSdk.create(jawaban);
+  
+  if (result.isOk) {
+    // Clear form
+    textareaEl.value = '';
+    document.getElementById('selected-question-text').textContent = '';
+    document.getElementById('form-container').style.display = 'none';
+    
+    // Highlight pertanyaan
+    document.querySelectorAll('#pertanyaan-list > div').forEach(el => {
+      el.style.background = '#0f172a80';
+      el.style.borderColor = 'transparent';
+    });
+    
+    btnEl.disabled = false;
+    btnEl.textContent = 'Simpan Jawaban';
+  } else {
+    btnEl.disabled = false;
+    btnEl.textContent = 'Simpan Jawaban';
+    alert('Gagal menyimpan jawaban. Silakan coba lagi.');
+  }
+};
+
+window.selectPertanyaan = function(index, question, element) {
+  // Highlight selected question
+  document.querySelectorAll('#pertanyaan-list > div').forEach(el => {
+    el.style.background = '#0f172a80';
+    el.style.borderColor = 'transparent';
+  });
+  element.style.background = currentCourse.color + '20';
+  element.style.borderColor = currentCourse.color + '50';
+  
+  // Show form
+  document.getElementById('form-container').style.display = 'block';
+  document.getElementById('selected-question-text').textContent = question;
+  document.getElementById('textarea-jawab').focus();
+  
+  // Scroll ke form
+  setTimeout(() => {
+    document.getElementById('form-container').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 100);
+};
+
+window.clearPertanyaan = function() {
+  document.getElementById('form-container').style.display = 'none';
+  document.getElementById('selected-question-text').textContent = '';
+  document.getElementById('textarea-jawab').value = '';
+  
+  // Remove highlight
+  document.querySelectorAll('#pertanyaan-list > div').forEach(el => {
+    el.style.background = '#0f172a80';
+    el.style.borderColor = 'transparent';
+  });
+};
+
+window.loadM3Image = function() {
+  const urlInput = document.getElementById('m3-image-url');
+  const url = urlInput.value.trim();
+  
+  if (!url) {
+    alert('Silakan paste link gambar terlebih dahulu!');
+    return;
+  }
+  
+  if (!url.startsWith('https://')) {
+    alert('Link harus dimulai dengan https://');
+    return;
+  }
+  
+  const imgEl = document.getElementById('m3-image');
+  const errorEl = document.getElementById('m3-image-error');
+  const containerEl = document.getElementById('m3-image-container');
+  
+  // Reset error
+  errorEl.style.display = 'none';
+  imgEl.style.display = 'block';
+  
+  // Set image
+  imgEl.src = url;
+  containerEl.style.display = 'block';
+};
+
+function updateJawabanDisplay() {
+  // Fungsi ini dikosongkan karena logika jawaban dipusatkan di submitGlobalAnswer dan checkExistingSubmission
+}
+
+function goHome() { 
+  showScreen('home'); 
+}
+function goSessions() { showScreen('sessions'); }
+function goMenu() { showScreen('menu'); }
+
+// LOGIN FUNCTION
+window.submitLogin = async function(e) {
+  e.preventDefault();
+  const emailInput = document.getElementById('input-email').value.trim();
+  const nimInput = document.getElementById('input-nim-pass').value.trim();
+  const btnEl = document.getElementById('btn-login');
+  const errorEl = document.getElementById('error-login');
+  
+  if (!emailInput || !nimInput) {
+    errorEl.textContent = '⚠️ Email dan NIM harus diisi!';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  btnEl.disabled = true;
+  btnEl.textContent = 'Memverifikasi...';
+  errorEl.style.display = 'none';
+  
+  // Validasi Mahasiswa dari Database Lokal
+  const student = studentDatabase.find(s => s.email === emailInput && s.nim === nimInput);
+  
+  if (student) {
+    // Validasi apakah mahasiswa masuk ke kelas yang benar
+    if (currentCourse && student.kelas !== currentCourse.kelas) {
+      errorEl.textContent = `❌ Anda terdaftar di Kelas ${student.kelas}, bukan Kelas ${currentCourse.kelas}. Silakan kembali ke Beranda dan pilih Kelas ${student.kelas}.`;
+      errorEl.style.display = 'block';
+      btnEl.disabled = false;
+      btnEl.textContent = 'Lanjut ke Kelas';
+      return;
+    }
+
+    currentStudent = student;
+    localStorage.setItem('current_student', JSON.stringify(student));
+    // Log aktivitas ke Supabase (Absensi)
+    if (window.dataSdk && window.dataSdk.logActivity) {
+      await window.dataSdk.logActivity({
+        nim: student.nim,
+        nama: student.nama,
+        kelas: student.kelas,
+        type: 'login',
+        timestamp: new Date().toISOString()
+      });
+    }
+    
+    const userCourse = courses.find(c => c.kelas === student.kelas);
+    if (userCourse) {
+       currentCourse = userCourse;
+       localStorage.setItem('current_course', JSON.stringify(currentCourse));
+       
+       // Render header sesi
+       const hdr = document.getElementById('session-header');
+       hdr.innerHTML = `
+         <div class="flex items-center gap-2 mb-1">
+           <span class="text-xs font-bold px-2 py-0.5 rounded-md" style="background:${currentCourse.color}20;color:${currentCourse.color};">Kelas ${currentCourse.kelas}</span>
+           <span class="text-xs" style="color:#64748b;">${currentCourse.kode}</span>
+         </div>
+         <h1 class="text-lg font-extrabold" style="color:#f1f5f9;">${currentCourse.nama}</h1>
+         <p class="text-xs mt-2" style="color:#94a3b8;">👤 ${student.nama} (${student.nim})</p>
+       `;
+       
+       // Render daftar sesi 1-8
+       const list = document.getElementById('session-list');
+       list.innerHTML = [1, 2, 3, 4, 5, 6, 7, 8].map(num => `
+         <div class="rounded-xl p-3.5 menu-item cursor-pointer anim-slide-up stagger-${Math.min(num,4)}" 
+              style="background:#1e293b;border:1px solid #334155;" 
+              onclick="openSession(${num})">
+           <div class="flex items-center justify-between">
+             <div class="flex items-center gap-3">
+               <div class="w-10 h-10 rounded-lg flex items-center justify-center font-bold" style="background:${currentCourse.color}15;color:${currentCourse.color};">
+                 ${num}
+               </div>
+               <div>
+                 <p class="text-sm font-bold" style="color:#f1f5f9;">Sesi ${num}</p>
+                 <p class="text-[10px]" style="color:#64748b;">Materi & Aktivitas Sesi ${num}</p>
+               </div>
+             </div>
+             <i data-lucide="chevron-right" style="width:16px;height:16px;color:#475569;"></i>
+           </div>
+         </div>
+       `).join('');
+       
+       showScreen('sessions');
+       lucide.createIcons();
+    } else {
+       showScreen('home');
+    }
+  } else {
+    errorEl.textContent = '❌ Email atau NIM salah! Hubungi Tutor jika ada kendala.';
+    errorEl.style.display = 'block';
+  }
+  
+  btnEl.disabled = false;
+  btnEl.textContent = 'Lanjut ke Kelas';
+};
+
+window.backToHome = function() {
+  // JANGAN hapus currentStudent agar tidak perlu login ulang
+  currentMenu = null;
+  localStorage.removeItem('current_menu');
+  showScreen('home');
+}
+
+renderCourses();
+lucide.createIcons();
+
+// AUTO-RESUME SESSION - hanya ke halaman sesi (AMAN, tidak ke menu)
+// Selalu hapus current_menu saat load untuk mencegah blank screen
+localStorage.removeItem('current_menu');
+currentMenu = null;
+
+try {
+  if (currentStudent && currentCourse) {
+    const validCourse = courses.find(c => c.id === currentCourse.id);
+    if (!validCourse) throw new Error('Kelas tidak valid');
+    // Resume hanya ke daftar sesi - AMAN
+    showScreen('sessions');
+    renderSessions();
+  }
+} catch(e) {
+  localStorage.removeItem('current_student');
+  localStorage.removeItem('current_course');
+  localStorage.removeItem('current_session');
+  currentStudent = null;
+  currentCourse = null;
+  currentSession = 1;
+  showScreen('home');
+}
+
+// ELEMENT SDK
+const defaultConfig = {
+  app_title: 'E-learning Bagoes',
+  welcome_text: 'Selamat Datang, Mahasiswa!',
+  background_color: '#0f172a',
+  surface_color: '#1e293b',
+  text_color: '#f1f5f9',
+  accent_color: '#f59e0b',
+  secondary_color: '#94a3b8',
+  font_family: 'Plus Jakarta Sans',
+  font_size: 14
+};
+
+window.elementSdk.init({
+  defaultConfig,
+  onConfigChange: async (config) => {
+    const t = document.getElementById('el-app-title');
+    const w = document.getElementById('el-welcome');
+    if (t) t.textContent = config.app_title || defaultConfig.app_title;
+    if (w) w.textContent = config.welcome_text || defaultConfig.welcome_text;
+  },
+  mapToCapabilities: (config) => ({
+    recolorables: [
+      { get: () => config.background_color || defaultConfig.background_color, set: (v) => { config.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
+      { get: () => config.surface_color || defaultConfig.surface_color, set: (v) => { config.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+      { get: () => config.text_color || defaultConfig.text_color, set: (v) => { config.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+      { get: () => config.accent_color || defaultConfig.accent_color, set: (v) => { config.accent_color = v; window.elementSdk.setConfig({ accent_color: v }); } },
+      { get: () => config.secondary_color || defaultConfig.secondary_color, set: (v) => { config.secondary_color = v; window.elementSdk.setConfig({ secondary_color: v }); } }
+    ],
+    borderables: [],
+    fontEditable: { get: () => config.font_family || defaultConfig.font_family, set: (v) => { config.font_family = v; window.elementSdk.setConfig({ font_family: v }); } },
+    fontSizeable: { get: () => config.font_size || defaultConfig.font_size, set: (v) => { config.font_size = v; window.elementSdk.setConfig({ font_size: v }); } }
+  }),
+  mapToEditPanelValues: (config) => new Map([
+    ['app_title', config.app_title || defaultConfig.app_title],
+    ['welcome_text', config.welcome_text || defaultConfig.welcome_text]
+  ])
+});
+  </script>
+ </body>
+</html>
